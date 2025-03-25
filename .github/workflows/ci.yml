@@ -6,7 +6,6 @@ on:
       - main
   pull_request:
 
-
 jobs:
   test:
     name: Test
@@ -33,3 +32,6 @@ jobs:
 
       - name: Check for lint
         run: ./scripts/lint
+
+      - name: Run static type checking
+        run: ./scripts/typecheck

@@ -24,7 +24,7 @@ pre-commit install --hook-type commit-msg
 ./scripts/test
 ```
 
-### Formatting and Linting
+### Formatting, Linting, and Type Checking
 
 This project uses `ruff` to format and lint our code.
 
@@ -38,4 +38,10 @@ To check for lint,
 
 ```bash
 ./scripts/lint
+```
+
+We use `mypy` for static type checking,
+
+```bash
+./scripts/typecheck
 ```
