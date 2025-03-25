@@ -7,10 +7,14 @@ This project uses `uv` to manage our Python dependencies. Visit their
 more information on how to install this tool.
 
 This project uses [pre-commit](https://pre-commit.com/) to manage linting and
-checks for code and commits. Before working on this project please install
-`pre-commit` and ensure the Git hooks are setup for this repository,
+checks for code and commits. These checks require
+[Commitizen](https://commitizen-tools.github.io/commitizen/) to lint code commits.
+
+Before working on this project please install both `pre-commit` and `commitizen`
+and ensure the Git hooks are setup for this repository by running,
 
 ```bash
+pre-commit install
 pre-commit install --hook-type commit-msg
 ```
 
