@@ -31,6 +31,24 @@ packages = ["src/stactools"]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.ruff]
+fix = true
+line-length = 88
+target-version = "py310"
+exclude = [
+    ".ruff_cache",
+    "__pypackages__",
+    "build",
+    "dist",
+    "stactools/hotosm/__version__.py",
+]
+
+[tool.ruff.lint]
+select = ["I", "E", "W", "D", "B", "F", "N", "Q"]
+ignore = ["N805", "B008"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
