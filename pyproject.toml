@@ -22,7 +22,7 @@ testpaths = [
 ]
 
 [tool.hatch.version]
-path = "src/stactools/hotosm/__init__.py"
+path = "src/stactools/hotosm/__version__.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/stactools"]
