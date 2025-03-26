@@ -1,0 +1,62 @@
+[project]
+name = "stactools-hotosm"
+description = "STAC creation tools for Humanitarian OpenStreetMap Team's OpenAerialMap data"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "AGPL-3.0"
+dynamic = ["version"]
+
+dependencies = [
+    "pystac[validation]>=1.12.2",
+]
+
+[dependency-groups]
+dev = [
+    "mypy>=1.15.0",
+    "pytest>=8.3.5",
+    "ruff>=0.11.2",
+]
+
+[tool.pytest]
+testpaths = [
+    "tests"
+]
+
+[tool.hatch.version]
+path = "src/stactools/hotosm/__version__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/stactools"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+fix = true
+line-length = 88
+target-version = "py310"
+exclude = [
+    ".ruff_cache",
+    "__pypackages__",
+    "build",
+    "dist",
+    "stactools/hotosm/__version__.py",
+]
+
+[tool.ruff.lint]
+select = ["I", "E", "W", "D", "B", "F", "N", "Q"]
+ignore = ["N805", "B008"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "0.2.1"
+version_files = [
+    "pyproject.toml:version",
+    "stactools/hotosm/__version__.py",
+]
+changelog_file = "CHANGELOG.md"
+update_changelog_on_bump = true
