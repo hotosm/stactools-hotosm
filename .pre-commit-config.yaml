@@ -39,5 +39,6 @@ repos:
         args:
           - --config-file=pyproject.toml
         additional_dependencies:
+          - pystac
           - types-requests
           - types-shapely
