@@ -1,5 +1,6 @@
 """Tests for `stactools.hotosm.oam_metadata_client`."""
 
+import logging
 from math import ceil
 
 import pytest
@@ -46,15 +47,39 @@ class TestOamMetadataClient:
     def test_get_items(
         self, test_client: OamMetadataClient, example_oam_meta_api_response: dict
     ):
-        """Test get_count() method."""
+        """Test get_items() method."""
         resp = responses.get(
             url=test_client.api_root,
             json=example_oam_meta_api_response,
         )
 
-        items = test_client.get_items()
+        items = test_client.get_items(raise_on_error=False)
         assert len(items) == 10
         assert resp.call_count == 1
+
+    @responses.activate
+    def test_get_items_raises_error(
+        self,
+        test_client: OamMetadataClient,
+        example_oam_meta_api_response: dict,
+        caplog,
+    ):
+        """Test get_items() method raises if metadata cannot be parsed."""
+        # Simile
+        bad_id = example_oam_meta_api_response["results"][0]["_id"]
+        example_oam_meta_api_response["results"][0]["acquisition_start"] = None
+
+        resp = responses.get(
+            url=test_client.api_root,
+            json=example_oam_meta_api_response,
+        )
+
+        with pytest.raises(TypeError, match=r"fromisoformat: argument must be str"):
+            test_client.get_items(raise_on_error=True)
+        assert resp.call_count == 1
+        assert len(caplog.record_tuples) == 1
+        assert caplog.record_tuples[0][1] == logging.ERROR
+        assert caplog.record_tuples[0][2] == f"Could not parse id={bad_id}"
 
     @responses.activate
     @pytest.mark.parametrize("n_per_page", [2, 3, 10])

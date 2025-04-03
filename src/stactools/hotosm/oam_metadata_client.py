@@ -3,12 +3,15 @@
 from __future__ import annotations
 
 import datetime as dt
+import logging
 from dataclasses import dataclass
 from typing import ClassVar, Iterator
 
 import requests
 
 from stactools.hotosm.oam_metadata import OamMetadata
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -64,8 +67,29 @@ class OamMetadataClient:
         req.raise_for_status()
         return req.json()["meta"]["found"]
 
-    def get_items(self, limit: int = 100, page_number: int = 1) -> list[OamMetadata]:
-        """List OAM metadata items."""
+    def get_items(
+        self,
+        limit: int = 100,
+        page_number: int = 1,
+        raise_on_error: bool = False,
+    ) -> list[OamMetadata]:
+        """List OAM metadata items.
+
+        Parameters
+        ==========
+        limit : int
+            Number of items to retrieve.
+        page_number : int
+            Offset `limit` pages into the catalog, beginning with page 1.
+        raise_on_error : bool
+            Raise an exception if an item cannot be parsed instead of simply logging the
+            exception. Defaults to False.
+
+        Returns:
+        =======
+        list[OamMetadata]
+            Returns at most `limit` metadata items.
+        """
         req = self.session.get(
             self.api_root,
             params={
@@ -77,7 +101,15 @@ class OamMetadataClient:
 
         results = []
         for result in req.json()["results"]:
-            results.append(self._parse_result(result))
+            # Some OAM metadata entries have null start/end times, so log these
+            # as errors and keep moving
+            try:
+                results.append(self._parse_result(result))
+            except Exception as e:
+                logger.exception(f"Could not parse id={result['_id']}")
+                if raise_on_error:
+                    raise e
+
         return results
 
     def get_all_items(self, page_size: int = 500) -> Iterator[OamMetadata]:
