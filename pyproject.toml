@@ -17,8 +17,11 @@ dev = [
     "mypy>=1.15.0",
     "pyproj>=3.7.1",
     "pytest>=8.3.5",
+    "responses>=0.25.7",
     "ruff>=0.11.2",
     "shapely>=2.1.0",
+    "types-requests>=2.32.0.20250328",
+    "types-shapely>=2.0.0.20250326",
 ]
 demo = [
     "notebook>=7.3.3",
@@ -57,6 +60,12 @@ ignore = ["N805", "B008"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
+
+[tool.mypy]
+explicit_package_bases = true
+files = ["src", "tests"]
+mypy_path = "$MYPY_CONFIG_FILE_DIR/src"
+namespace_packages = true
 
 [tool.commitizen]
 name = "cz_conventional_commits"

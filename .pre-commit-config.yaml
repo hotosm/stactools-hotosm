@@ -37,6 +37,7 @@ repos:
       - id: mypy
         files: "^src/.*\\.py$"
         args:
-          - --namespace-packages
+          - --config-file=pyproject.toml
         additional_dependencies:
-          - pystac
+          - types-requests
+          - types-shapely
