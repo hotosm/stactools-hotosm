@@ -8,6 +8,7 @@ import rasterio
 from pystac.utils import str_to_datetime
 from rasterio.transform import from_bounds
 
+from stactools.hotosm.exceptions import AssetNotFoundError
 from stactools.hotosm.oam_metadata import OamMetadata
 from stactools.hotosm.stac import create_collection, create_item
 
@@ -63,3 +64,9 @@ def test_create_item(example_oam_image: OamMetadata):
         assert f"proj:{prop}" in item.assets["image"].extra_fields
 
     assert "alternate" not in item.assets["image"].extra_fields
+
+
+def test_create_item_raises_asset_not_found(example_oam_metadata: OamMetadata):
+    """Test that create_item() raises AssetNotFoundError."""
+    with pytest.raises(AssetNotFoundError, match=r"Asset does not exist.*"):
+        create_item(example_oam_metadata)

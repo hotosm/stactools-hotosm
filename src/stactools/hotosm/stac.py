@@ -22,6 +22,7 @@ from pystac.extensions.item_assets import ItemAssetDefinition
 from pystac.extensions.projection import ProjectionExtension
 from pystac.extensions.render import Render, RenderExtension
 from pystac.utils import datetime_to_str
+from rasterio.errors import RasterioIOError
 from rio_stac.stac import get_projection_info
 
 from stactools.hotosm.constants import (
@@ -29,6 +30,7 @@ from stactools.hotosm.constants import (
     COLLECTION_ID,
     COLLECTION_TITLE,
 )
+from stactools.hotosm.exceptions import AssetNotFoundError
 from stactools.hotosm.oam_metadata import OamMetadata
 
 ALTERNATE_ASSETS_VERSION = "v1.2.0"
@@ -104,9 +106,14 @@ def create_collection() -> Collection:
 
 
 def create_item(oam_metadata: OamMetadata) -> Item:
-    """Create a STAC Item for an OAM image."""
-    # TODO: add projection extension
+    """Create a STAC Item for an OAM image.
 
+    Args:
+        oam_metadata : OpenAerialMap metadata describing a cataloged image.
+
+    Returns:
+        STAC Item describing the cataloged image.
+    """
     item = Item(
         id=oam_metadata.id,
         geometry=oam_metadata.geojson,
@@ -186,8 +193,13 @@ def _add_projection_extension(item: Item, asset_keys: list[str]):
     item.ext.add("proj")
     for asset_key in asset_keys:
         ext = ProjectionExtension.ext(item.assets[asset_key])
-        with rasterio.open(item.assets[asset_key].href) as src:
-            proj_info = get_projection_info(src)
+
+        href = item.assets[asset_key].href
+        try:
+            with rasterio.open(href) as src:
+                proj_info = get_projection_info(src)
+        except RasterioIOError as e:
+            raise AssetNotFoundError(f"Asset does not exist at {href}") from e
         ext.apply(**proj_info)
 
 
