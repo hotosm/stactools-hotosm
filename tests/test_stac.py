@@ -1,6 +1,7 @@
 """Tests for `stactools.hotosm.stac` module."""
 
 import datetime as dt
+from unittest.mock import patch
 
 import numpy as np
 import pytest
@@ -70,3 +71,29 @@ def test_create_item_raises_asset_not_found(example_oam_metadata: OamMetadata):
     """Test that create_item() raises AssetNotFoundError."""
     with pytest.raises(AssetNotFoundError, match=r"Asset does not exist.*"):
         create_item(example_oam_metadata)
+
+
+@patch("stactools.hotosm.stac._add_projection_extension")
+def test_create_item_creates_s3_alternate_assets(
+    patch_add_proj_ext, example_oam_metadata: OamMetadata
+):
+    """Ensure create_item creates alternate assets references for AWS S3 hrefs.
+
+    This test patches `_add_projection_extension` because it would otherwise make
+    network requests to S3 that we want to avoid.
+    """
+    example_oam_metadata.image_url = "https://test-bucket.s3.amazonaws.com/test.tif"
+
+    item = create_item(example_oam_metadata)
+
+    image_asset = item.assets["image"]
+    assert image_asset.extra_fields["alternate:name"] == "HTTPS"
+
+    image_alt_assets = image_asset.extra_fields["alternate"]
+    assert "s3" in image_alt_assets
+    assert image_alt_assets["s3"] == {
+        "alternate:name": "S3",
+        "href": "s3://test-bucket/test.tif",
+    }
+
+    patch_add_proj_ext.assert_called()
