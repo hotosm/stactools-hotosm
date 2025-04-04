@@ -65,7 +65,7 @@ class TestOamMetadataClient:
         caplog,
     ):
         """Test get_items() method raises if metadata cannot be parsed."""
-        # Simile
+        # Some metadata entries have no acquisition start/end provided
         bad_id = example_oam_meta_api_response["results"][0]["_id"]
         example_oam_meta_api_response["results"][0]["acquisition_start"] = None
 
@@ -89,7 +89,7 @@ class TestOamMetadataClient:
         test_client: OamMetadataClient,
         example_oam_meta_api_response: dict,
     ):
-        """Test get_count() method."""
+        """Test get_all_items() method works with different page count sizes."""
         resps = []
         pages = ceil(10 / n_per_page)
         for page in range(pages + 1):

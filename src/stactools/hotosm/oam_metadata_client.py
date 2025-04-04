@@ -58,14 +58,14 @@ class OamMetadataClient:
 
     def get_count(self) -> int:
         """Return the total count of items in the catalog."""
-        req = self.session.get(
+        resp = self.session.get(
             self.api_root,
             params={
                 "limit": 1,
             },
         )
-        req.raise_for_status()
-        return req.json()["meta"]["found"]
+        resp.raise_for_status()
+        return resp.json()["meta"]["found"]
 
     def get_items(
         self,
@@ -84,17 +84,17 @@ class OamMetadataClient:
         Returns:
             At most `limit` metadata items.
         """
-        req = self.session.get(
+        resp = self.session.get(
             self.api_root,
             params={
                 "limit": limit,
                 "page": page_number,
             },
         )
-        req.raise_for_status()
+        resp.raise_for_status()
 
         results = []
-        for result in req.json()["results"]:
+        for result in resp.json()["results"]:
             # Some OAM metadata entries have null start/end times, so log these
             # as errors and keep moving
             try:
