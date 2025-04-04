@@ -67,6 +67,10 @@ files = ["src", "tests"]
 mypy_path = "$MYPY_CONFIG_FILE_DIR/src"
 namespace_packages = true
 
+[[tool.mypy.overrides]]
+module = ["rasterio.*", "rio_stac.stac"]
+follow_untyped_imports = true
+
 [tool.commitizen]
 name = "cz_conventional_commits"
 version = "0.2.1"

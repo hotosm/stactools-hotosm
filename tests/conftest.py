@@ -15,7 +15,7 @@ DATA = Path(__file__).parent / "data"
 
 
 @pytest.fixture
-def example_oam_item_metadata() -> OamMetadata:
+def example_oam_metadata() -> OamMetadata:
     """Example OamItemMetadata for testing."""
     now = dt.datetime.now(tz=dt.timezone.utc)
     bbox = [-80.4248105, -0.980146199999, -80.418725308, -0.9748217]

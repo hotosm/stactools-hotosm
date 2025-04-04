@@ -1,7 +1,9 @@
 """Convert OAM metadata into STAC representation."""
 
 import datetime as dt
+from urllib.parse import urlparse
 
+import rasterio
 from pystac import (
     Asset,
     Collection,
@@ -17,8 +19,10 @@ from pystac import (
 )
 from pystac.extensions.file import FileExtension
 from pystac.extensions.item_assets import ItemAssetDefinition
+from pystac.extensions.projection import ProjectionExtension
 from pystac.extensions.render import Render, RenderExtension
 from pystac.utils import datetime_to_str
+from rio_stac.stac import get_projection_info
 
 from stactools.hotosm.constants import (
     COLLECTION_DESCRIPTION,
@@ -26,6 +30,9 @@ from stactools.hotosm.constants import (
     COLLECTION_TITLE,
 )
 from stactools.hotosm.oam_metadata import OamMetadata
+
+ALTERNATE_ASSETS_VERSION = "v1.2.0"
+ALTERNATE_ASSETS_SCHEMA = f"https://stac-extensions.github.io/alternate-assets/{ALTERNATE_ASSETS_VERSION}/schema.json"
 
 
 def create_collection() -> Collection:
@@ -91,31 +98,33 @@ def create_collection() -> Collection:
         }
     )
 
+    collection.validate()
+
     return collection
 
 
-def create_item(oam_item: OamMetadata) -> Item:
+def create_item(oam_metadata: OamMetadata) -> Item:
     """Create a STAC Item for an OAM image."""
     # TODO: add projection extension
 
     item = Item(
-        id=oam_item.id,
-        geometry=oam_item.geojson,
-        bbox=oam_item.bbox,
+        id=oam_metadata.id,
+        geometry=oam_metadata.geojson,
+        bbox=oam_metadata.bbox,
         datetime=None,
         properties={
-            "title": oam_item.title,
-            "provider": oam_item.provider,
-            "platform": oam_item.platform,
-            "start_datetime": datetime_to_str(oam_item.acquisition_start),
-            "end_datetime": datetime_to_str(oam_item.acquisition_end),
-            "gsd": oam_item.gsd,
+            "title": oam_metadata.title,
+            "provider": oam_metadata.provider,
+            "platform": oam_metadata.platform,
+            "start_datetime": datetime_to_str(oam_metadata.acquisition_start),
+            "end_datetime": datetime_to_str(oam_metadata.acquisition_end),
+            "gsd": oam_metadata.gsd,
         },
         extra_fields={
             "providers": [
                 Provider(
-                    name=oam_item.provider,
-                    description=oam_item.contact,
+                    name=oam_metadata.provider,
+                    description=oam_metadata.contact,
                     roles=[
                         ProviderRole.PRODUCER,
                         ProviderRole.LICENSOR,
@@ -125,31 +134,30 @@ def create_item(oam_item: OamMetadata) -> Item:
         },
     )
 
-    if oam_item.license:
-        item.properties["license"] = oam_item.license
+    if oam_metadata.license:
+        item.properties["license"] = oam_metadata.license
 
-    if oam_item.sensor:
-        item.properties["instruments"] = [oam_item.sensor]
-
-    item.ext.add("file")
+    if oam_metadata.sensor:
+        item.properties["instruments"] = [oam_metadata.sensor]
 
     item.add_asset(
         "image",
         Asset(
-            href=oam_item.image_url,
-            title=oam_item.title,
+            href=oam_metadata.image_url,
+            title=oam_metadata.title,
             media_type=MediaType.COG,
             roles=["data"],
         ),
     )
 
+    item.ext.add("file")
     file_ext = FileExtension.ext(item.assets["image"])
-    file_ext.apply(size=oam_item.image_file_size)
+    file_ext.apply(size=oam_metadata.image_file_size)
 
     item.add_asset(
         "thumbnail",
         Asset(
-            href=oam_item.thumbnail_url,
+            href=oam_metadata.thumbnail_url,
             title="thumbnail",
             media_type=MediaType.PNG,
             roles=["thumbnail"],
@@ -159,17 +167,45 @@ def create_item(oam_item: OamMetadata) -> Item:
     item.add_asset(
         "metadata",
         Asset(
-            href=oam_item.metadata_url,
+            href=oam_metadata.metadata_url,
             title="metadata",
             media_type=MediaType.JSON,
             roles=["metadata"],
         ),
     )
 
+    _add_projection_extension(item, ["image"])
+    _add_alternate_assets(item)
+
     item.validate()
     return item
 
 
+def _add_projection_extension(item: Item, asset_keys: list[str]):
+    """Modify Item in place by adding projection extension for assets."""
+    item.ext.add("proj")
+    for asset_key in asset_keys:
+        ext = ProjectionExtension.ext(item.assets[asset_key])
+        with rasterio.open(item.assets[asset_key].href) as src:
+            proj_info = get_projection_info(src)
+        ext.apply(**proj_info)
+
+
 def _add_alternate_assets(item: Item) -> Item:
-    # TODO: add alternate-assets extension
+    """Modify Item in place by adding alternate-assets extension."""
+    item.stac_extensions.append(ALTERNATE_ASSETS_SCHEMA)
+
+    for asset in item.assets.values():
+        parsed = urlparse(asset.href)
+        if "amazonaws.com" in parsed.netloc:
+            bucket = parsed.netloc.split(".")[0]
+            s3_url = f"s3://{bucket}{parsed.path}"
+
+            asset.extra_fields.update(
+                {
+                    "alternate:name": "HTTPS",
+                    "alternate": {"s3": {"href": s3_url, "alternate:name": "S3"}},
+                }
+            )
+
     return item
