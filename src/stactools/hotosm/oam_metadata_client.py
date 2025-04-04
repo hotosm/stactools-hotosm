@@ -75,20 +75,14 @@ class OamMetadataClient:
     ) -> list[OamMetadata]:
         """List OAM metadata items.
 
-        Parameters
-        ==========
-        limit : int
-            Number of items to retrieve.
-        page_number : int
-            Offset `limit` pages into the catalog, beginning with page 1.
-        raise_on_error : bool
-            Raise an exception if an item cannot be parsed instead of simply logging the
-            exception. Defaults to False.
+        Args:
+            limit: Number of items to retrieve.
+            page_number: Offset `limit` pages into the catalog, beginning with page 1.
+            raise_on_error: Raise an exception if an item cannot be parsed instead of
+                simply logging the exception. Defaults to False.
 
         Returns:
-        =======
-        list[OamMetadata]
-            Returns at most `limit` metadata items.
+            At most `limit` metadata items.
         """
         req = self.session.get(
             self.api_root,

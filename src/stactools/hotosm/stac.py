@@ -109,10 +109,13 @@ def create_item(oam_metadata: OamMetadata) -> Item:
     """Create a STAC Item for an OAM image.
 
     Args:
-        oam_metadata : OpenAerialMap metadata describing a cataloged image.
+        oam_metadata: OpenAerialMap metadata describing a cataloged image.
 
     Returns:
         STAC Item describing the cataloged image.
+
+    Raises:
+        AssetNotFoundError: If an imagery asset does not exist.
     """
     item = Item(
         id=oam_metadata.id,
