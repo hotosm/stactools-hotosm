@@ -55,6 +55,7 @@ def create_collection() -> Collection:
                 url="https://openaerialmap.org/",
                 roles=[
                     ProviderRole.HOST,
+                    ProviderRole.LICENSOR,
                 ],
             )
         ],
