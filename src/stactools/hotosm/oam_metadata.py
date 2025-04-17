@@ -8,7 +8,14 @@ from dataclasses import dataclass
 
 @dataclass
 class OamMetadata:
-    """Metadata for OAM imagery."""
+    """Metadata for OAM imagery.
+
+    This metadata specification is based off the Open Imagery Network (OIN)
+    metadata specification (https://github.com/openimagerynetwork/oin-metadata-spec).
+
+    For more details about the OAM metadata specification, see:
+    https://github.com/hotosm/OpenAerialMap/blob/master/metadata/README.md
+    """
 
     # Unique identifier
     id: str
