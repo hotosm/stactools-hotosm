@@ -44,6 +44,24 @@ class TestOamMetadataClient:
         assert resp.call_count == 1
 
     @responses.activate
+    def test_get_item(
+        self, test_client: OamMetadataClient, example_oam_meta_api_response: dict
+    ):
+        """Test get_items() method."""
+        single_response = example_oam_meta_api_response.copy()
+        single_response["results"] = example_oam_meta_api_response["results"][0]
+        meta_id = single_response["results"]["_id"]
+
+        resp = responses.get(
+            url=f"{test_client.api_root}/{meta_id}",
+            json=single_response,
+        )
+
+        item = test_client.get_item(meta_id)
+        assert item.id == meta_id
+        assert resp.call_count == 1
+
+    @responses.activate
     def test_get_items(
         self, test_client: OamMetadataClient, example_oam_meta_api_response: dict
     ):

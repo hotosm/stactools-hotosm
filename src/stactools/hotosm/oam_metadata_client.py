@@ -30,7 +30,7 @@ class OamMetadataClient:
         """Create a new OamMetadataClient."""
         return cls(
             session=session or requests.Session(),
-            api_root=api_root,
+            api_root=api_root.rstrip("/"),
         )
 
     def _parse_result(self, result: dict) -> OamMetadata:
@@ -77,6 +77,25 @@ class OamMetadataClient:
         )
         resp.raise_for_status()
         return resp.json()["meta"]["found"]
+
+    def get_item(
+        self,
+        item_id: str,
+    ) -> OamMetadata:
+        """Retrieve one OAM metadata item.
+
+        Args:
+            item_id: Unique identifier for an OAM catalog entry.
+
+        Returns:
+            The OamMetadata for the catalog entry requested.
+        """
+        resp = self.session.get(
+            f"{self.api_root}/{item_id}",
+        )
+        resp.raise_for_status()
+        result = resp.json()["results"]
+        return self._parse_result(result)
 
     def get_items(
         self,
