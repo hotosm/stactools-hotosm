@@ -118,19 +118,28 @@ def create_item(oam_metadata: OamMetadata) -> Item:
     Raises:
         AssetNotFoundError: If an imagery asset does not exist.
     """
+    if oam_metadata.acquisition_start == oam_metadata.acquisition_end:
+        datetime = oam_metadata.acquisition_start
+        datetime_properties = {}
+    else:
+        datetime = None
+        datetime_properties = {
+            "start_datetime": datetime_to_str(oam_metadata.acquisition_start),
+            "end_datetime": datetime_to_str(oam_metadata.acquisition_end),
+        }
+
     item = Item(
         id=oam_metadata.id,
         collection=COLLECTION_ID,
         geometry=oam_metadata.geojson,
         bbox=oam_metadata.bbox,
-        datetime=None,
+        datetime=datetime,
         properties={
             "title": oam_metadata.title,
             "provider": oam_metadata.provider,
             "platform": oam_metadata.platform,
-            "start_datetime": datetime_to_str(oam_metadata.acquisition_start),
-            "end_datetime": datetime_to_str(oam_metadata.acquisition_end),
             "gsd": oam_metadata.gsd,
+            **datetime_properties,
         },
         extra_fields={
             "providers": [

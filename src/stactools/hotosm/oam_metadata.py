@@ -36,6 +36,7 @@ class OamMetadata:
     acquisition_start: dt.datetime
     # Ending time of acquisition
     acquisition_end: dt.datetime
+
     # GeoJSON of footprint
     geojson: dict
     # Bounding box
