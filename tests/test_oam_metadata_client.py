@@ -1,5 +1,6 @@
 """Tests for `stactools.hotosm.oam_metadata_client`."""
 
+import datetime as dt
 import logging
 from math import ceil
 
@@ -41,6 +42,24 @@ class TestOamMetadataClient:
 
         count = test_client.get_count()
         assert count == 17737
+        assert resp.call_count == 1
+
+    @responses.activate
+    def test_get_item(
+        self, test_client: OamMetadataClient, example_oam_meta_api_response: dict
+    ):
+        """Test get_items() method."""
+        single_response = example_oam_meta_api_response.copy()
+        single_response["results"] = example_oam_meta_api_response["results"][0]
+        meta_id = single_response["results"]["_id"]
+
+        resp = responses.get(
+            url=f"{test_client.api_root}/{meta_id}",
+            json=single_response,
+        )
+
+        item = test_client.get_item(meta_id)
+        assert item.id == meta_id
         assert resp.call_count == 1
 
     @responses.activate
@@ -111,3 +130,37 @@ class TestOamMetadataClient:
         assert len(items) == 10
         for resp in resps:
             assert resp.call_count == 1
+
+    def test_parse_result_fixes_acquisition_order(
+        self,
+        example_oam_meta_api_response: dict,
+        test_client: OamMetadataClient,
+    ):
+        """Ensure result parsing corrects backwards start/end for acquisition."""
+        result = example_oam_meta_api_response["results"][0]
+        start_ = dt.datetime(2020, 1, 1, tzinfo=dt.timezone.utc)
+        end_ = dt.datetime(2020, 1, 2, tzinfo=dt.timezone.utc)
+        # simulate mixup
+        result["acquisition_start"] = end_.isoformat()
+        result["acquisition_end"] = start_.isoformat()
+
+        metadata = test_client._parse_result(result)
+        assert metadata.acquisition_start == start_
+        assert metadata.acquisition_end == end_
+
+    def test_parse_result_handles_uploaded_at(
+        self,
+        example_oam_meta_api_response: dict,
+        test_client: OamMetadataClient,
+    ):
+        """Ensure result parsing conditionally includes uploaded_at."""
+        result = example_oam_meta_api_response["results"][0]
+
+        result.pop("uploaded_at", None)
+        metadata = test_client._parse_result(result)
+        assert metadata.uploaded_at is None
+
+        utc_now = dt.datetime.now(dt.UTC)
+        result["uploaded_at"] = utc_now.isoformat()
+        metadata = test_client._parse_result(result)
+        assert metadata.uploaded_at == utc_now

@@ -30,11 +30,21 @@ class OamMetadataClient:
         """Create a new OamMetadataClient."""
         return cls(
             session=session or requests.Session(),
-            api_root=api_root,
+            api_root=api_root.rstrip("/"),
         )
 
     def _parse_result(self, result: dict) -> OamMetadata:
         """Parse a metadata API result into our data class."""
+        # Some records have start >= end
+        acquisition_start = dt.datetime.fromisoformat(result["acquisition_start"])
+        acquisition_end = dt.datetime.fromisoformat(result["acquisition_end"])
+        if acquisition_start > acquisition_end:
+            acquisition_start, acquisition_end = acquisition_end, acquisition_start
+
+        uploaded_at = result.get("uploaded_at")
+        if uploaded_at:
+            uploaded_at = dt.datetime.fromisoformat(result["uploaded_at"])
+
         return OamMetadata(
             id=result["_id"],
             title=result["title"],
@@ -43,8 +53,9 @@ class OamMetadataClient:
             platform=result["platform"],
             sensor=result["properties"].get("sensor"),
             license=result["properties"].get("license"),
-            acquisition_start=dt.datetime.fromisoformat(result["acquisition_start"]),
-            acquisition_end=dt.datetime.fromisoformat(result["acquisition_end"]),
+            acquisition_start=acquisition_start,
+            acquisition_end=acquisition_end,
+            uploaded_at=uploaded_at,
             geojson=result["geojson"],
             bbox=result["bbox"],
             footprint_wkt=result["footprint"],
@@ -66,6 +77,25 @@ class OamMetadataClient:
         )
         resp.raise_for_status()
         return resp.json()["meta"]["found"]
+
+    def get_item(
+        self,
+        item_id: str,
+    ) -> OamMetadata:
+        """Retrieve one OAM metadata item.
+
+        Args:
+            item_id: Unique identifier for an OAM catalog entry.
+
+        Returns:
+            The OamMetadata for the catalog entry requested.
+        """
+        resp = self.session.get(
+            f"{self.api_root}/{item_id}",
+        )
+        resp.raise_for_status()
+        result = resp.json()["results"]
+        return self._parse_result(result)
 
     def get_items(
         self,
