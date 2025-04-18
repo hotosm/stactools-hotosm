@@ -42,6 +42,7 @@ def example_oam_metadata() -> OamMetadata:
         license="CC-BY-4.0",
         acquisition_start=now,
         acquisition_end=now + dt.timedelta(seconds=1),
+        uploaded_at=now,
         geojson=geojson,
         bbox=bbox,
         footprint_wkt=wkt_dumps(shapely.geometry.shape(geojson)),

@@ -41,6 +41,10 @@ class OamMetadataClient:
         if acquisition_start > acquisition_end:
             acquisition_start, acquisition_end = acquisition_end, acquisition_start
 
+        uploaded_at = result.get("uploaded_at")
+        if uploaded_at:
+            uploaded_at = dt.datetime.fromisoformat(result["uploaded_at"])
+
         return OamMetadata(
             id=result["_id"],
             title=result["title"],
@@ -51,6 +55,7 @@ class OamMetadataClient:
             license=result["properties"].get("license"),
             acquisition_start=acquisition_start,
             acquisition_end=acquisition_end,
+            uploaded_at=uploaded_at,
             geojson=result["geojson"],
             bbox=result["bbox"],
             footprint_wkt=result["footprint"],

@@ -161,6 +161,9 @@ def create_item(oam_metadata: OamMetadata) -> Item:
     if oam_metadata.sensor:
         item.properties["instruments"] = [oam_metadata.sensor]
 
+    if oam_metadata.uploaded_at:
+        item.properties["created"] = datetime_to_str(oam_metadata.uploaded_at)
+
     item.add_asset(
         "image",
         Asset(

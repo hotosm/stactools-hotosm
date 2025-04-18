@@ -36,6 +36,8 @@ class OamMetadata:
     acquisition_start: dt.datetime
     # Ending time of acquisition
     acquisition_end: dt.datetime
+    # Time uploaded to OAM API (not part of specification, but returned from API)
+    uploaded_at: dt.datetime | None
 
     # GeoJSON of footprint
     geojson: dict
