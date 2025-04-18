@@ -137,7 +137,7 @@ def create_item(oam_metadata: OamMetadata) -> Item:
         properties={
             "title": oam_metadata.title,
             "provider": oam_metadata.provider,
-            "platform": oam_metadata.platform,
+            "oam:platform_type": oam_metadata.platform,
             "gsd": oam_metadata.gsd,
             **datetime_properties,
         },
