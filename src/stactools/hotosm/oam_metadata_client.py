@@ -35,12 +35,6 @@ class OamMetadataClient:
 
     def _parse_result(self, result: dict) -> OamMetadata:
         """Parse a metadata API result into our data class."""
-        # Some records have start >= end
-        acquisition_start = dt.datetime.fromisoformat(result["acquisition_start"])
-        acquisition_end = dt.datetime.fromisoformat(result["acquisition_end"])
-        if acquisition_start > acquisition_end:
-            acquisition_start, acquisition_end = acquisition_end, acquisition_start
-
         uploaded_at = result.get("uploaded_at")
         if uploaded_at:
             uploaded_at = dt.datetime.fromisoformat(result["uploaded_at"])
@@ -53,8 +47,8 @@ class OamMetadataClient:
             platform=result["platform"],
             sensor=result["properties"].get("sensor"),
             license=result["properties"].get("license"),
-            acquisition_start=acquisition_start,
-            acquisition_end=acquisition_end,
+            acquisition_start=dt.datetime.fromisoformat(result["acquisition_start"]),
+            acquisition_end=dt.datetime.fromisoformat(result["acquisition_end"]),
             uploaded_at=uploaded_at,
             geojson=result["geojson"],
             bbox=result["bbox"],

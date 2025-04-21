@@ -61,10 +61,22 @@ class OamMetadata:
 
     def sanitize(self) -> OamMetadata:
         """Return a sanitized version of this metadata item."""
+        self._sanitize_acquisition_datetime()
         self._sanitize_license()
         self._sanitize_platform()
         self._sanitize_sensor()
         return self
+
+    def _sanitize_acquisition_datetime(self):
+        """Sanitize acquisition datetimes.
+
+        Some records have start >= end.
+        """
+        if self.acquisition_start > self.acquisition_end:
+            self.acquisition_start, self.acquisition_end = (
+                self.acquisition_end,
+                self.acquisition_start,
+            )
 
     def _sanitize_license(self):
         """Sanitize license identifier, if provided.

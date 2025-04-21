@@ -131,23 +131,6 @@ class TestOamMetadataClient:
         for resp in resps:
             assert resp.call_count == 1
 
-    def test_parse_result_fixes_acquisition_order(
-        self,
-        example_oam_meta_api_response: dict,
-        test_client: OamMetadataClient,
-    ):
-        """Ensure result parsing corrects backwards start/end for acquisition."""
-        result = example_oam_meta_api_response["results"][0]
-        start_ = dt.datetime(2020, 1, 1, tzinfo=dt.timezone.utc)
-        end_ = dt.datetime(2020, 1, 2, tzinfo=dt.timezone.utc)
-        # simulate mixup
-        result["acquisition_start"] = end_.isoformat()
-        result["acquisition_end"] = start_.isoformat()
-
-        metadata = test_client._parse_result(result)
-        assert metadata.acquisition_start == start_
-        assert metadata.acquisition_end == end_
-
     def test_parse_result_handles_uploaded_at(
         self,
         example_oam_meta_api_response: dict,
