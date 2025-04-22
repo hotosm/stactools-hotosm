@@ -100,3 +100,30 @@ def test_create_item_creates_s3_alternate_assets(
     }
 
     patch_add_proj_ext.assert_called()
+
+
+@patch("stactools.hotosm.stac._add_projection_extension")
+def test_create_item_handles_start_vs_end_datetime(
+    patch_add_proj_ext, example_oam_metadata: OamMetadata
+):
+    """Ensure STAC Item parsing correctly populates datetime or start/end datetime."""
+    # Same start/end should just use "datetime"
+    now = dt.datetime.now(dt.UTC)
+    example_oam_metadata.acquisition_start = now
+    example_oam_metadata.acquisition_end = now
+
+    item = create_item(example_oam_metadata)
+    assert item.datetime == now
+    assert "start_datetime" not in item.properties
+    assert "end_datetime" not in item.properties
+    patch_add_proj_ext.assert_called()
+
+    # Different start/end should just use "datetime"
+    example_oam_metadata.acquisition_start = now
+    example_oam_metadata.acquisition_end = now + dt.timedelta(minutes=5)
+
+    item = create_item(example_oam_metadata)
+    assert item.datetime is None
+    assert "start_datetime" in item.properties
+    assert "end_datetime" in item.properties
+    patch_add_proj_ext.assert_called()

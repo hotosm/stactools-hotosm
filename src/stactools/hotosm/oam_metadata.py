@@ -8,7 +8,14 @@ from dataclasses import dataclass
 
 @dataclass
 class OamMetadata:
-    """Metadata for OAM imagery."""
+    """Metadata for OAM imagery.
+
+    This metadata specification is based off the Open Imagery Network (OIN)
+    metadata specification (https://github.com/openimagerynetwork/oin-metadata-spec).
+
+    For more details about the OAM metadata specification, see:
+    https://github.com/hotosm/OpenAerialMap/blob/master/metadata/README.md
+    """
 
     # Unique identifier
     id: str
@@ -29,6 +36,9 @@ class OamMetadata:
     acquisition_start: dt.datetime
     # Ending time of acquisition
     acquisition_end: dt.datetime
+    # Time uploaded to OAM API (not part of specification, but returned from API)
+    uploaded_at: dt.datetime | None
+
     # GeoJSON of footprint
     geojson: dict
     # Bounding box
@@ -51,10 +61,22 @@ class OamMetadata:
 
     def sanitize(self) -> OamMetadata:
         """Return a sanitized version of this metadata item."""
+        self._sanitize_acquisition_datetime()
         self._sanitize_license()
         self._sanitize_platform()
         self._sanitize_sensor()
         return self
+
+    def _sanitize_acquisition_datetime(self):
+        """Sanitize acquisition datetimes.
+
+        Some records have start >= end.
+        """
+        if self.acquisition_start > self.acquisition_end:
+            self.acquisition_start, self.acquisition_end = (
+                self.acquisition_end,
+                self.acquisition_start,
+            )
 
     def _sanitize_license(self):
         """Sanitize license identifier, if provided.
