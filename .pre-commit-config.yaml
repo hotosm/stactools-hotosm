@@ -29,7 +29,7 @@ repos:
     rev: v0.44.0
     hooks:
       - id: markdownlint
-        args: [--fix, --ignore, CHANGELOG.md]
+        args: [--fix, --ignore, CHANGELOG.md, --ignore, stac-extension]
 
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.15.0
