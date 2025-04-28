@@ -1,7 +1,6 @@
 """Convert OAM metadata into STAC representation."""
 
 import datetime as dt
-from urllib.parse import urlparse
 
 import rasterio
 from pystac import (
@@ -32,9 +31,7 @@ from stactools.hotosm.constants import (
 )
 from stactools.hotosm.exceptions import AssetNotFoundError
 from stactools.hotosm.oam_metadata import OamMetadata
-
-ALTERNATE_ASSETS_VERSION = "v1.2.0"
-ALTERNATE_ASSETS_SCHEMA = f"https://stac-extensions.github.io/alternate-assets/{ALTERNATE_ASSETS_VERSION}/schema.json"
+from stactools.hotosm.stac_common import add_alternate_assets
 
 
 def create_collection() -> Collection:
@@ -199,7 +196,7 @@ def create_item(oam_metadata: OamMetadata) -> Item:
     )
 
     _add_projection_extension(item, ["image"])
-    _add_alternate_assets(item)
+    add_alternate_assets(item)
 
     item.add_link(
         Link(
@@ -226,23 +223,3 @@ def _add_projection_extension(item: Item, asset_keys: list[str]):
         except RasterioIOError as e:
             raise AssetNotFoundError(f"Asset does not exist at {href}") from e
         ext.apply(**proj_info)
-
-
-def _add_alternate_assets(item: Item) -> Item:
-    """Modify Item in place by adding alternate-assets extension."""
-    item.stac_extensions.append(ALTERNATE_ASSETS_SCHEMA)
-
-    for asset in item.assets.values():
-        parsed = urlparse(asset.href)
-        if "amazonaws.com" in parsed.netloc:
-            bucket = parsed.netloc.split(".")[0]
-            s3_url = f"s3://{bucket}{parsed.path}"
-
-            asset.extra_fields.update(
-                {
-                    "alternate:name": "HTTPS",
-                    "alternate": {"s3": {"href": s3_url, "alternate:name": "S3"}},
-                }
-            )
-
-    return item
