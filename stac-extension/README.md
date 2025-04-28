@@ -12,9 +12,8 @@ It builds on common STAC metadata by defining some optional common metadata as r
 the expected values for common metadata.
 
 - Examples:
-  - [Item example](../examples/item.json): Shows the basic usage of the extension in a STAC Item
-  - [Collection example](../examples/collection.json): Shows the basic usage of the extension in a STAC Collection
-- [JSON Schema](json-schema/schema.json)
+  - [Item example](./examples/item.json): Shows the basic usage of the extension in a STAC Item
+- [JSON Schema](./json-schema/schema.json)
 - [Changelog](./CHANGELOG.md)
 
 ## Fields
