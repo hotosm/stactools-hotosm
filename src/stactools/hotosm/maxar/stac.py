@@ -13,6 +13,7 @@ from pystac import (
     SpatialExtent,
     TemporalExtent,
 )
+from pystac.extensions.item_assets import ItemAssetDefinition
 from pystac.extensions.render import Render, RenderExtension
 
 from stactools.hotosm.stac_common import add_alternate_assets
@@ -48,6 +49,17 @@ def create_collection(catalog: Catalog, event_dates: list[dt.datetime]) -> Colle
             )
         )
 
+    collection.item_assets = {
+        "visual": ItemAssetDefinition.create(
+            title="Visual image",
+            description=(
+                "Imagery appropriate for visualization from this acquisition."
+            ),
+            media_type=MediaType.COG,
+            roles=["data"],
+        )
+    }
+
     # Add render extension
     collection.ext.add("render")
     render = RenderExtension.ext(collection)
@@ -61,6 +73,8 @@ def create_collection(catalog: Catalog, event_dates: list[dt.datetime]) -> Colle
             )
         }
     )
+
+    collection.validate()
 
     return collection
 
