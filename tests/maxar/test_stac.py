@@ -15,7 +15,9 @@ DATA = Path(__file__).parent.joinpath("data")
 @pytest.fixture
 def catalog() -> pystac.Catalog:
     """Example Maxar STAC Catalog."""
-    return pystac.read_file(DATA / "catalog.json")
+    obj = pystac.read_file(DATA / "catalog.json")
+    assert isinstance(obj, pystac.Catalog)
+    return obj
 
 
 @pytest.fixture
@@ -32,7 +34,9 @@ def event_info() -> list[dict]:
 @pytest.fixture
 def item() -> pystac.Item:
     """Example Maxar catalog STAC Item."""
-    return pystac.read_file(DATA / "item.json")
+    obj = pystac.read_file(DATA / "item.json")
+    assert isinstance(obj, pystac.Item)
+    return obj
 
 
 def test_create_collection(catalog: pystac.Catalog, event_info: list[dict]):
