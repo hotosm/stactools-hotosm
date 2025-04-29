@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 import pytest
+from pystac.errors import STACValidationError
 from pystac.validation import JsonSchemaSTACValidator
 
 from stactools.hotosm.oam_metadata import OamMetadata
@@ -35,3 +36,40 @@ def test_oam_item_validates_stac_extension(
     item = create_item(example_oam_image.sanitize())
     item.stac_extensions.append(OAM_EXT_SCHEMA)
     item.validate(oam_validator)
+
+
+def test_stac_extension_requires(
+    example_oam_image: OamMetadata, oam_validator: JsonSchemaSTACValidator
+):
+    """Ensure our OAM STAC Extension requires certain properties."""
+    item = create_item(example_oam_image.sanitize())
+    item.stac_extensions.append(OAM_EXT_SCHEMA)
+
+    broken = item.clone()
+    broken.properties.pop("oam:platform_type")
+    with pytest.raises(
+        STACValidationError, match=r"'oam:platform_type' is a required property"
+    ):
+        broken.validate(oam_validator)
+
+    # requires oam:platform_type
+    broken = item.clone()
+    broken.properties.pop("oam:producer_name")
+    with pytest.raises(
+        STACValidationError, match=r"'oam:producer_name' is a required property"
+    ):
+        broken.validate(oam_validator)
+
+    # requires gsd
+    broken = item.clone()
+    broken.properties.pop("gsd")
+    with pytest.raises(STACValidationError, match=r"'gsd' is a required property"):
+        broken.validate(oam_validator)
+
+    # requires providers
+    broken = item.clone()
+    broken.common_metadata.providers = None
+    with pytest.raises(
+        STACValidationError, match=r"'providers' is a required property"
+    ):
+        broken.validate(oam_validator)

@@ -21,7 +21,7 @@
               "allOf": [
                 {
                   "$comment": "Require fields here for Item Properties.",
-                  "required": ["provider", "gsd", "oam:platform_type"]
+                  "required": ["gsd", "oam:platform_type", "oam:producer_name"]
                 },
                 {
                   "$ref": "#/definitions/fields"
@@ -58,10 +58,16 @@
       "type": "object",
       "properties": {
         "oam:platform_type": {
+          "description": "The type of platform that acquired the imagery.",
           "type": "string",
           "enum": ["kite", "balloon", "uav", "aircraft", "satellite"]
         },
+        "oam:producer_name": {
+          "description": "The data producer's name. This should match an entry in the Providers object.",
+          "type": "string"
+        },
         "license": {
+          "description": "If defined, the Item level license must be a Creative Commons license.",
           "type": "string",
           "enum": ["CC-BY-SA-4.0", "CC-BY-4.0", "CC-BY-NC-4.0"]
         }
