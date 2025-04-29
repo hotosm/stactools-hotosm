@@ -5,19 +5,40 @@ on:
       - "extension-v*"
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Inject env variables
-        uses: rlespinasse/github-slug-action@v4.4.1
       - uses: actions/checkout@v4
+
       - name: Parse extension version
+        id: prep
         run: |
-          extension_version=$(echo "$env.GITHUB_REF_SLUG" | sed 's/extension-//')
+          extension_version=$(echo "$env.GITHUB_REF" | awk -F '/' '{ print $NF }' | sed 's/extension-//')
           echo "EXTENSION_VERSION=${extension_version}" >> $GITHUB_ENV
-      - name: deploy JSON Schema for version ${{ env.EXTENSION_VERSION }}
-        uses: peaceiris/actions-gh-pages@v3.9.3
+
+      - name: Build GH Pages static files
+        id: build
+        run: |
+          site=site/${extension_version}
+          mkdir -p $site
+          cp stac-extension/json-schema/schema.json $site/schema.json
+
+      - name: Upload static files as artifact
+        id: deployment
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: json-schema
-          destination_dir: ${{ env.EXTENSION_VERSION }}
+          path: site/
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      pages: write # to deploy to Pages
+      id-token: write # to verify the deployment originates from an appropriate source
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
