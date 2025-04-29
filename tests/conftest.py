@@ -65,7 +65,7 @@ def example_oam_meta_api_response() -> dict:
 
 
 @pytest.fixture
-def example_oam_image(example_oam_metadata: OamMetadata, tmp_path) -> OamMetadata:
+def example_oam_image(example_oam_metadata: OamMetadata, tmp_path: Path) -> OamMetadata:
     """Provision data for the example OAM metadata item."""
     data = np.random.randint(low=0, high=255, size=(3, 13, 42), dtype="uint8")
     profile = {

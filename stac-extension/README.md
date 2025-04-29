@@ -5,7 +5,7 @@
 - **Field Name Prefix:** oam
 - **Scope:** Item
 - **Extension [Maturity Classification](https://github.com/radiantearth/stac-spec/tree/master/extensions/README.md#extension-maturity):** Proposal
-- **Owner**: @ceholden @gadomski
+- **Owners**: @ceholden @gadomski
 
 This extension documents metadata used by the Humanitarian OpenStreetMap Team (HOT)'s OpenAerialMap (OAM) project.
 It builds on common STAC metadata by defining some optional common metadata as required attributes and defines
@@ -30,7 +30,7 @@ The fields in the table below can be used in these parts of STAC documents:
 | Field Name        | Type   | Description                                                                                          |
 | ----------------- | ------ | ---------------------------------------------------------------------------------------------------- |
 | provider          | string | **REQUIRED**. The imagery data provider. The provider must also be included in the "provider" field. |
-| gsd               | number | **REQUIRED**. The Ground Sampling Distance                                                           |
+| [gsd](https://github.com/radiantearth/stac-spec/blob/master/commons/common-metadata.md#gsd)               | number | **REQUIRED**. The Ground Sampling Distance                                                           |
 | oam:platform_type | string | **REQUIRED**. The platform type (kite, balloon, UAV, airplane, satellite)                            |
 | license           | string | If provided for STAC Items, must be a Creative Commons (CC) license.                                 |
 
@@ -42,7 +42,7 @@ The type of the observation platform used to acquire the imagery. The platform t
 
 - `kite`
 - `balloon`
-- `UAV`
+- `uav`
 - `airplane`
 - `satellite`
 
