@@ -23,4 +23,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - First definition of the OAM STAC extension.
 
-[Unreleased]: https://github.com/stac-extensions/template/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/hotosm/stactools-hotosm/compare/v0.1.0...HEAD
+[v0.1.0]: https://github.com/hotosm/stactools-hotosm/
