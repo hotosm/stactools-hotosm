@@ -1,4 +1,4 @@
-# Template Extension Specification
+# Humanitarian OpenStreetMap Team (HOTOSM) OpenAerialMap (OAM) Extension Specification
 
 - **Title:** Humanitarian OpenStreetMap Team OpenAerialMap Extension
 - **Identifier:** <https://raw.githubusercontent.com/hotosm/stactools-hotosm/refs/heads/main/stac-extension/json-schema/schema.json>
@@ -21,16 +21,18 @@ the expected values for common metadata.
 The fields in the table below can be used in these parts of STAC documents:
 
 - [ ] Catalogs
-- [] Collections
+- [ ] Collections
 - [x] Item Properties (incl. Summaries in Collections)
-- [] Assets (for both Collections and Items, incl. Item Asset Definitions in Collections)
+- [ ] Assets (for both Collections and Items, incl. Item Asset Definitions in Collections)
 - [ ] Links
+- [x] Provider
 
-| Field Name        | Type   | Description                                                               |
-| ----------------- | ------ | ------------------------------------------------------------------------- |
-| provider          | string | **REQUIRED**. OAM Items must define the imagery data provider             |
-| gsd               | number | **REQUIRED** OAM Items must define the Ground Sampling Distance           |
-| oam:platform_type | string | **REQUIRED**. The platform type (kite, balloon, UAV, airplane, satellite) |
+| Field Name        | Type   | Description                                                                                          |
+| ----------------- | ------ | ---------------------------------------------------------------------------------------------------- |
+| provider          | string | **REQUIRED**. The imagery data provider. The provider must also be included in the "provider" field. |
+| gsd               | number | **REQUIRED**. The Ground Sampling Distance                                                           |
+| oam:platform_type | string | **REQUIRED**. The platform type (kite, balloon, UAV, airplane, satellite)                            |
+| license           | string | If provided for STAC Items, must be a Creative Commons (CC) license.                                 |
 
 ### Additional Field Information
 
@@ -43,6 +45,20 @@ The type of the observation platform used to acquire the imagery. The platform t
 - `UAV`
 - `airplane`
 - `satellite`
+
+#### Provider
+
+The imagery data provider must be defined for each STAC Item. This data provider should also be included
+as a ["provider"](https://github.com/radiantearth/stac-spec/blob/master/commons/common-metadata.md#provider-object)
+link with contact information.
+
+#### License
+
+Imagery for OAM must be licensed as either,
+
+- `CC-BY-SA-4.0`
+- `CC-BY-4.0`
+- `CC-BY-NC-4.0`
 
 ## Contributing
 
