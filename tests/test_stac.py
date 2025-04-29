@@ -21,6 +21,7 @@ def test_create_collection():
 def test_create_item(example_oam_image: OamMetadata):
     """Test Item creation."""
     item = create_item(example_oam_image)
+    item.validate()
 
     assert item.collection_id == COLLECTION_ID
 
