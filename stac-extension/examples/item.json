@@ -50,7 +50,7 @@
   "properties": {
     "title": "Pisgah Crater Cinder Cone",
     "provider": "redacted",
-    "oam:platform_type": "UAV",
+    "oam:platform_type": "uav",
     "gsd": 2.990237944881498e-7,
     "license": "CC-BY-4.0",
     "instruments": [

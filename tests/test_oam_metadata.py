@@ -16,7 +16,7 @@ class TestOamMetadata:
 
         example_oam_metadata.sanitize()
 
-        assert example_oam_metadata.platform == "UAV"
+        assert example_oam_metadata.platform == "uav"
         assert example_oam_metadata.license == "CC-BY-4.0"
         assert example_oam_metadata.sensor is None
 

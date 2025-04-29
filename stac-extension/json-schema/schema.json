@@ -59,7 +59,7 @@
       "properties": {
         "oam:platform_type": {
           "type": "string",
-          "enum": ["kite", "balloon", "UAV", "aircraft", "satellite"]
+          "enum": ["kite", "balloon", "uav", "aircraft", "satellite"]
         },
         "license": {
           "type": "string",
