@@ -27,12 +27,12 @@ The fields in the table below can be used in these parts of STAC documents:
 - [ ] Links
 - [x] Provider
 
-| Field Name        | Type   | Description                                                                                          |
-| ----------------- | ------ | ---------------------------------------------------------------------------------------------------- |
-| provider          | string | **REQUIRED**. The imagery data provider. The provider must also be included in the "provider" field. |
-| [gsd](https://github.com/radiantearth/stac-spec/blob/master/commons/common-metadata.md#gsd)               | number | **REQUIRED**. The Ground Sampling Distance                                                           |
-| oam:platform_type | string | **REQUIRED**. The platform type (kite, balloon, UAV, airplane, satellite)                            |
-| license           | string | If provided for STAC Items, must be a Creative Commons (CC) license.                                 |
+| Field Name                                                                                  | Type   | Description                                                                                          |
+| ------------------------------------------------------------------------------------------- | ------ | ---------------------------------------------------------------------------------------------------- |
+| provider                                                                                    | string | **REQUIRED**. The imagery data provider. The provider must also be included in the "provider" field. |
+| [gsd](https://github.com/radiantearth/stac-spec/blob/master/commons/common-metadata.md#gsd) | number | **REQUIRED**. The Ground Sampling Distance                                                           |
+| oam:platform_type                                                                           | string | **REQUIRED**. The platform type (kite, balloon, UAV, airplane, satellite)                            |
+| license                                                                                     | string | If provided for STAC Items, must be a Creative Commons (CC) license.                                 |
 
 ### Additional Field Information
 
