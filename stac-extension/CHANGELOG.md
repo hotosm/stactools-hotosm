@@ -17,10 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-## [v1.0.0]
+## [v0.1.0]
 
 ### Added
 
 - First definition of the OAM STAC extension.
 
-[Unreleased]: https://github.com/stac-extensions/template/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/stac-extensions/template/compare/v0.1.0...HEAD

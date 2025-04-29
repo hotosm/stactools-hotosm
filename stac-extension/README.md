@@ -1,6 +1,6 @@
-# Humanitarian OpenStreetMap Team (HOTOSM) OpenAerialMap (OAM) Extension Specification
+# Humanitarian OpenStreetMap Team OpenAerialMap Extension Specification
 
-- **Title:** Humanitarian OpenStreetMap Team OpenAerialMap Extension
+- **Title:** Humanitarian OpenStreetMap Team OpenAerialMap (OAM) Extension
 - **Identifier:** <https://raw.githubusercontent.com/hotosm/stactools-hotosm/refs/heads/main/stac-extension/json-schema/schema.json>
 - **Field Name Prefix:** oam
 - **Scope:** Item
