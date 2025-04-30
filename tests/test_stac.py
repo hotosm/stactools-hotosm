@@ -9,7 +9,6 @@ import rasterio
 from pystac.utils import str_to_datetime
 from rasterio.transform import from_bounds
 
-from stactools.hotosm.constants import COLLECTION_ID
 from stactools.hotosm.exceptions import AssetNotFoundError
 from stactools.hotosm.oam_metadata import OamMetadata
 from stactools.hotosm.stac import create_collection, create_item
@@ -55,8 +54,6 @@ def test_create_item(example_oam_image: OamMetadata):
     """Test Item creation."""
     item = create_item(example_oam_image)
     item.validate()
-
-    assert item.collection_id == COLLECTION_ID
 
     for datetime_prop in {"start_datetime", "end_datetime"}:
         assert isinstance(str_to_datetime(item.properties[datetime_prop]), dt.datetime)

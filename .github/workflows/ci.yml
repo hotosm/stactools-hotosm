@@ -35,3 +35,6 @@ jobs:
 
       - name: Run static type checking
         run: ./scripts/typecheck
+
+      - name: Check lock file
+        run: uv lock --check

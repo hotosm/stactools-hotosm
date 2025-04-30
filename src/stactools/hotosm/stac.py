@@ -127,7 +127,6 @@ def create_item(oam_metadata: OamMetadata) -> Item:
 
     item = Item(
         id=oam_metadata.id,
-        collection=COLLECTION_ID,
         geometry=oam_metadata.geojson,
         bbox=oam_metadata.bbox,
         datetime=datetime,
@@ -197,14 +196,6 @@ def create_item(oam_metadata: OamMetadata) -> Item:
 
     _add_projection_extension(item, ["image"])
     add_alternate_assets(item)
-
-    item.add_link(
-        Link(
-            rel=RelType.COLLECTION,
-            media_type=MediaType.JSON,
-            target="collection.json",
-        )
-    )
 
     item.validate()
     return item

@@ -27,9 +27,6 @@ dev = [
 demo = [
     "notebook>=7.3.3",
 ]
-maxar = [
-    "pystac-client>=0.8.6,<1",
-]
 
 [tool.pytest]
 testpaths = [

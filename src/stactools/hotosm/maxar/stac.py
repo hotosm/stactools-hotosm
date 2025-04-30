@@ -25,22 +25,26 @@ COLLECTION_DESCRIPTION = (
 )
 
 
-def create_collection(catalog: Catalog, event_dates: list[dt.datetime]) -> Collection:
+def create_collection(
+    catalog: Catalog,
+    temporal_extent_start: dt.datetime | None = None,
+    temporal_extent_end: dt.datetime | None = None,
+) -> Collection:
     """Rewrite Maxar root Catalog into a Collection for HOT OAM."""
-    catalog_as_dict = catalog.to_dict()
-
     collection = Collection(
         id=COLLECTION_ID,
-        title=catalog_as_dict["description"],
+        # The Maxar catalogs have terse descriptions that are better suited to use
+        # as a title
+        title=catalog.description,
         description=COLLECTION_DESCRIPTION,
         extent=Extent(
             spatial=SpatialExtent([[-180.0, -90.0, 180.0, 90.0]]),
-            temporal=TemporalExtent([min(event_dates), None]),
+            temporal=TemporalExtent([temporal_extent_start, temporal_extent_end]),
         ),
-        license=catalog_as_dict["license"],
+        license=catalog.extra_fields["license"],
     )
 
-    if (catalog_self_link := catalog.get_self_href()) is not None:
+    if catalog_self_link := catalog.get_self_href():
         collection.add_link(
             Link(
                 rel=RelType.DERIVED_FROM,
@@ -82,6 +86,7 @@ def create_collection(catalog: Catalog, event_dates: list[dt.datetime]) -> Colle
 def create_item(item: Item) -> Item:
     """Rewrite Maxar STAC Item."""
     oam_item = item.clone()
+    oam_item.set_collection(None)
 
     # The ID is unique but contains "/" that interfere with access via API
     oam_item.id = item.id.replace("/", "-")
@@ -124,16 +129,6 @@ def create_item(item: Item) -> Item:
                 media_type=MediaType.JSON,
             )
         )
-
-    # Update Collection ID
-    oam_item.collection_id = COLLECTION_ID
-    oam_item.add_link(
-        Link(
-            rel=RelType.COLLECTION,
-            target="collection.json",
-            media_type=MediaType.JSON,
-        )
-    )
 
     # Add alternate assets info
     add_alternate_assets(oam_item)

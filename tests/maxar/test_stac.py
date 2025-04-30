@@ -41,7 +41,12 @@ def item() -> pystac.Item:
 
 def test_create_collection(catalog: pystac.Catalog, event_info: list[dict]):
     """Test Collection creation."""
-    collection = create_collection(catalog, [info["date"] for info in event_info])
+    event_dates = [info["date"] for info in event_info]
+    collection = create_collection(catalog, min(event_dates), max(event_dates))
+    collection.validate()
+
+    collection = create_collection(catalog)
+    assert collection.extent.temporal.intervals == [[None, None]]
     collection.validate()
 
 
