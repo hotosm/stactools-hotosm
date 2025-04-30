@@ -28,7 +28,7 @@ demo = [
     "notebook>=7.3.3",
 ]
 
-[tool.pytest]
+[tool.pytest.ini_options]
 testpaths = [
     "tests"
 ]
