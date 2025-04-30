@@ -45,3 +45,16 @@ We use `mypy` for static type checking,
 ```bash
 ./scripts/typecheck
 ```
+
+## STAC Extension
+
+This repository also defines a STAC extension describing specific OpenAerialMap
+metadata requirements. This extension is described in the
+[README](./stac-extension/README.md) and published to Github Pages
+for reference by STAC metadata.
+
+The STAC extension will be published by creating a tagged release that looks
+like, `extension-v{major}.{minor}.{patch}` (e.g., `extension-v1.0.0`). The
+Github Actions workflow will take care of parsing the version string from this
+release name. This `extension-` prefix is required to differentiate releases
+publishing the package versus releases publishing the STAC extension.

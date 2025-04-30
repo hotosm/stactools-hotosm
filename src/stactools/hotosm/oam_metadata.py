@@ -90,9 +90,9 @@ class OamMetadata:
     def _sanitize_platform(self):
         """Sanitize platform (usually rewriting acronyms as uppercase)."""
         platform_transforms = {
-            "uav": "UAV",
+            "UAV": "uav",
         }
-        if transformed := platform_transforms.get(self.platform.lower()):
+        if transformed := platform_transforms.get(self.platform.upper()):
             self.platform = transformed
 
     def _sanitize_sensor(self):

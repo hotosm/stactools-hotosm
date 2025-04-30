@@ -36,6 +36,11 @@ from stactools.hotosm.oam_metadata import OamMetadata
 ALTERNATE_ASSETS_VERSION = "v1.2.0"
 ALTERNATE_ASSETS_SCHEMA = f"https://stac-extensions.github.io/alternate-assets/{ALTERNATE_ASSETS_VERSION}/schema.json"
 
+OAM_EXT_VERSION = "v0.1.0"
+OAM_EXT_SCHEMA = (
+    f"https://hotosm.github.io/stactools-hotosm/oam/{OAM_EXT_VERSION}/schema.json"
+)
+
 
 def create_collection() -> Collection:
     """Create a STAC Collection of OAM imagery."""
@@ -136,7 +141,7 @@ def create_item(oam_metadata: OamMetadata) -> Item:
         datetime=datetime,
         properties={
             "title": oam_metadata.title,
-            "provider": oam_metadata.provider,
+            "oam:producer_name": oam_metadata.provider,
             "oam:platform_type": oam_metadata.platform,
             "gsd": oam_metadata.gsd,
             **datetime_properties,
@@ -210,6 +215,7 @@ def create_item(oam_metadata: OamMetadata) -> Item:
     )
 
     item.validate()
+
     return item
 
 
