@@ -38,3 +38,18 @@ jobs:
 
       - name: Check lock file
         run: uv lock --check
+
+  test-extension:
+    name: Test STAC extension
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "lts/*"
+
+      - uses: actions/checkout@v4
+
+      - run: |
+          cd stac-extension/
+          npm install
+          npm test

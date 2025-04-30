@@ -33,6 +33,11 @@ from stactools.hotosm.exceptions import AssetNotFoundError
 from stactools.hotosm.oam_metadata import OamMetadata
 from stactools.hotosm.stac_common import add_alternate_assets
 
+OAM_EXT_VERSION = "v0.1.0"
+OAM_EXT_SCHEMA = (
+    f"https://hotosm.github.io/stactools-hotosm/oam/{OAM_EXT_VERSION}/schema.json"
+)
+
 
 def create_collection() -> Collection:
     """Create a STAC Collection of OAM imagery."""
@@ -132,7 +137,7 @@ def create_item(oam_metadata: OamMetadata) -> Item:
         datetime=datetime,
         properties={
             "title": oam_metadata.title,
-            "provider": oam_metadata.provider,
+            "oam:producer_name": oam_metadata.provider,
             "oam:platform_type": oam_metadata.platform,
             "gsd": oam_metadata.gsd,
             **datetime_properties,
@@ -198,6 +203,7 @@ def create_item(oam_metadata: OamMetadata) -> Item:
     add_alternate_assets(item)
 
     item.validate()
+
     return item
 
 
