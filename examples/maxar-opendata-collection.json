@@ -29,5 +29,17 @@
       "interval": [["2021-12-04T00:00:00Z", "2025-01-07T00:00:00Z"]]
     }
   },
-  "license": "CC-BY-NC-4.0"
+  "license": "CC-BY-NC-4.0",
+  "providers": [
+    {
+      "name": "Maxar",
+      "roles": ["licensor", "producer"],
+      "url": "https://www.maxar.com/open-data"
+    },
+    {
+      "name": "Amazon Web Services (AWS)",
+      "roles": ["host"],
+      "url": "https://registry.opendata.aws/maxar-open-data/"
+    }
+  ]
 }

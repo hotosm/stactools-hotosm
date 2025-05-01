@@ -9,6 +9,8 @@ from pystac import (
     Item,
     Link,
     MediaType,
+    Provider,
+    ProviderRole,
     RelType,
     SpatialExtent,
     TemporalExtent,
@@ -42,6 +44,18 @@ def create_collection(
             temporal=TemporalExtent([temporal_extent_start, temporal_extent_end]),
         ),
         license=catalog.extra_fields["license"],
+        providers=[
+            Provider(
+                name="Maxar",
+                url="https://www.maxar.com/open-data",
+                roles=[ProviderRole.LICENSOR, ProviderRole.PRODUCER],
+            ),
+            Provider(
+                name="Amazon Web Services (AWS)",
+                url="https://registry.opendata.aws/maxar-open-data/",
+                roles=[ProviderRole.HOST],
+            ),
+        ],
     )
 
     if catalog_self_link := catalog.get_self_href():
