@@ -19,13 +19,16 @@ jobs:
       - name: Build GH Pages static files
         id: build
         run: |
-          site=site/${extension_version}
+          site=site/oam/${extension_version}
           mkdir -p $site
           cp stac-extension/json-schema/schema.json $site/schema.json
+          # sigh - force Github Actions "upload-artifact" to keep directory structure
+          # ref: https://github.com/actions/upload-artifact/issues/174
+          touch site/.gitignore
 
       - name: Upload static files as artifact
         id: deployment
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: site/
 

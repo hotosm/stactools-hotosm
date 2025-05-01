@@ -36,6 +36,9 @@ jobs:
       - name: Run static type checking
         run: ./scripts/typecheck
 
+      - name: Check lock file
+        run: uv lock --check
+
   test-extension:
     name: Test STAC extension
     runs-on: ubuntu-latest
