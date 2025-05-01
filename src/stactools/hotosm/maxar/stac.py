@@ -104,7 +104,7 @@ def create_item(item: Item) -> Item:
     oam_item.make_asset_hrefs_absolute()
 
     # Add some OAM properties
-    oam_item.properties["provider"] = "Maxar"
+    oam_item.properties["oam:producer_name"] = "Maxar"
     oam_item.properties["oam:platform_type"] = "satellite"
 
     # Update "title" to be less duplicative, baking in either,

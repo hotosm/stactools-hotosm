@@ -57,15 +57,18 @@
       "Phantom 3 Pro"
     ],
     "created": "2017-04-08T05:11:08.440000Z",
-    "datetime": "2016-05-01T07:00:00Z"
+    "datetime": "2016-05-01T07:00:00Z",
+    "providers": [
+      {
+        "name": "redacted",
+        "description": "redacted, redacted@redacted.redacted",
+        "roles": [
+          "producer",
+          "licensor"
+        ]
+      }
+    ]
   },
-  "links": [
-    {
-      "rel": "collection",
-      "href": "collection.json",
-      "type": "application/json"
-    }
-  ],
   "assets": {
     "image": {
       "href": "http://oin-hotosm-temp.s3.amazonaws.com/58e870a5cfbcc90010aca443/0/09c6d420-ae7a-4316-a4ad-8aaf81977e21.tif",
@@ -163,15 +166,5 @@
       ]
     }
   },
-  "collection": "openaerialmap",
-  "providers": [
-    {
-      "name": "redacted",
-      "description": "redacted, redacted@redacted.redacted",
-      "roles": [
-        "producer",
-        "licensor"
-      ]
-    }
-  ]
+  "links": []
 }

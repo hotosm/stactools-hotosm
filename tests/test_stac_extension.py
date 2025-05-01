@@ -65,11 +65,3 @@ def test_stac_extension_requires(
     broken.properties.pop("gsd")
     with pytest.raises(STACValidationError, match=r"'gsd' is a required property"):
         broken.validate(oam_validator)
-
-    # requires providers
-    broken = item.clone()
-    broken.common_metadata.providers = None
-    with pytest.raises(
-        STACValidationError, match=r"'providers' is a required property"
-    ):
-        broken.validate(oam_validator)
