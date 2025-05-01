@@ -27,7 +27,6 @@ dev = [
 demo = [
     "notebook>=7.3.3",
     "pypgstac[psycopg]>=0.9.6",
-    "rustac>=0.7.0",
 ]
 
 [tool.pytest.ini_options]
