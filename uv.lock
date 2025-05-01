@@ -1918,6 +1918,18 @@ wheels = [
 ]
 
 [[package]]
+name = "rustac"
+version = "0.7.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/a7/9c/04678b71deaff1d4da7593fbf0b13713d2eea4c73e123d3e46f0d855b6b7/rustac-0.7.0.tar.gz", hash = "sha256:c16fdd076e78391cba4bca237379ff036ddc664d6ea68c29a79711b9a578c249", size = 504203 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/4f/50/6b35cdf395ec223816b593aba5bd32a01a810cd318fa39b540b644547f10/rustac-0.7.0-cp311-abi3-macosx_10_12_x86_64.whl", hash = "sha256:35ad65534732ca6355aaff96b678b4f2a804925a44d71b4184d9c33a74dcb3e5", size = 20832242 },
+    { url = "https://files.pythonhosted.org/packages/0d/42/5809f10db518a8824c9cbdca6d122871855e978987021f525e5c7cec0b0d/rustac-0.7.0-cp311-abi3-macosx_11_0_arm64.whl", hash = "sha256:641fd3a0051c9c1fcbead2a3abd36829f697400d6f72fd926323bb7b90e68976", size = 18985889 },
+    { url = "https://files.pythonhosted.org/packages/63/94/f64015f3485738deea9af805a6f2c1bc7e083af18f5dfde31608f9d4f067/rustac-0.7.0-cp311-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2f898379304fc9cda7a49780bf6e2eace3b2b86dcac6518a0009d24b7beeca71", size = 22898029 },
+    { url = "https://files.pythonhosted.org/packages/29/67/502c394c08cea2f6a273f0b17de035b11e456db220cb9230c6e3077d7923/rustac-0.7.0-cp311-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:831ece4a0867cb1a5da77bf3e610a55a2982f1a8011b3f61de7749f88fa22d01", size = 20748911 },
+]
+
+[[package]]
 name = "send2trash"
 version = "1.8.3"
 source = { registry = "https://pypi.org/simple" }
@@ -2045,6 +2057,7 @@ dependencies = [
 demo = [
     { name = "notebook" },
     { name = "pypgstac", extra = ["psycopg"] },
+    { name = "rustac" },
 ]
 dev = [
     { name = "mypy" },
@@ -2069,6 +2082,7 @@ requires-dist = [
 demo = [
     { name = "notebook", specifier = ">=7.3.3" },
     { name = "pypgstac", extras = ["psycopg"], specifier = ">=0.9.6" },
+    { name = "rustac", specifier = ">=0.7.0" },
 ]
 dev = [
     { name = "mypy", specifier = ">=1.15.0" },
