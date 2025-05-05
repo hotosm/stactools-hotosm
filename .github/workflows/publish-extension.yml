@@ -13,13 +13,14 @@ jobs:
       - name: Parse extension version
         id: prep
         run: |
-          extension_version=$(echo "$env.GITHUB_REF" | awk -F '/' '{ print $NF }' | sed 's/extension-//')
+          # parse extension from version for tag ref like "refs/tags/extension-v0.1.0"
+          extension_version=$(echo $GITHUB_REF | awk -F '/' '{ print $NF }' | sed 's/extension-//')
           echo "EXTENSION_VERSION=${extension_version}" >> $GITHUB_ENV
 
       - name: Build GH Pages static files
         id: build
         run: |
-          site=site/oam/${extension_version}
+          site=site/oam/${EXTENSION_VERSION}
           mkdir -p $site
           cp stac-extension/json-schema/schema.json $site/schema.json
           # sigh - force Github Actions "upload-artifact" to keep directory structure
