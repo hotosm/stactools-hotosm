@@ -13,6 +13,7 @@ jobs:
       - name: Parse extension version
         id: prep
         run: |
+          # parse extension from version for tag ref like "refs/tags/extension-v0.1.0"
           extension_version=$(echo ${{ env.GITHUB_REF }}" | awk -F '/' '{ print $NF }' | sed 's/extension-//')
           echo "EXTENSION_VERSION=${extension_version}" >> $GITHUB_ENV
 
