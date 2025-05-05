@@ -142,19 +142,17 @@ def create_item(oam_metadata: OamMetadata) -> Item:
             "gsd": oam_metadata.gsd,
             **datetime_properties,
         },
-        extra_fields={
-            "providers": [
-                Provider(
-                    name=oam_metadata.provider,
-                    description=oam_metadata.contact,
-                    roles=[
-                        ProviderRole.PRODUCER,
-                        ProviderRole.LICENSOR,
-                    ],
-                ).to_dict()
-            ],
-        },
     )
+    item.common_metadata.providers = [
+        Provider(
+            name=oam_metadata.provider,
+            description=oam_metadata.contact,
+            roles=[
+                ProviderRole.PRODUCER,
+                ProviderRole.LICENSOR,
+            ],
+        )
+    ]
 
     if oam_metadata.license:
         item.properties["license"] = oam_metadata.license

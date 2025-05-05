@@ -55,5 +55,5 @@ def test_create_item(item: pystac.Item):
     oam_item = create_item(item)
     oam_item.validate()
 
-    assert oam_item.properties["provider"] == "Maxar"
+    assert oam_item.properties["oam:producer_name"] == "Maxar"
     assert oam_item.properties["oam:platform_type"] == "satellite"

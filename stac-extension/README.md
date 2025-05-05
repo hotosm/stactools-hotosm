@@ -25,14 +25,13 @@ The fields in the table below can be used in these parts of STAC documents:
 - [x] Item Properties (incl. Summaries in Collections)
 - [ ] Assets (for both Collections and Items, incl. Item Asset Definitions in Collections)
 - [ ] Links
-- [x] Provider
 
-| Field Name                                                                                            | Type   | Description                                                                                                      |
-| ----------------------------------------------------------------------------------------------------- | ------ | ---------------------------------------------------------------------------------------------------------------- |
-| oam:producer_name                                                                                     | string | **REQUIRED**. The name of the imagery data producer. The producer must also be included in the "Provider" field. |
-| oam:platform_type                                                                                     | string | **REQUIRED**. The platform type (kite, balloon, UAV, airplane, satellite)                                        |
-| [gsd](https://github.com/radiantearth/stac-spec/blob/master/commons/common-metadata.md#gsd)           | number | **REQUIRED**. The Ground Sampling Distance                                                                       |
-| [license](https://github.com/radiantearth/stac-spec/blob/master/commons/common-metadata.md#licensing) | string | If provided for STAC Items, must be a Creative Commons (CC) license.                                             |
+| Field Name                                                                                            | Type   | Description                                                                                                                                                                                |
+| ----------------------------------------------------------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| oam:producer_name                                                                                     | string | **REQUIRED**. The name of the imagery data producer. The producer must also be included in the "Provider" field of STAC Items if the producer is not consistent for the entire Collection. |
+| oam:platform_type                                                                                     | string | **REQUIRED**. The platform type (kite, balloon, UAV, airplane, satellite)                                                                                                                  |
+| [gsd](https://github.com/radiantearth/stac-spec/blob/master/commons/common-metadata.md#gsd)           | number | **REQUIRED**. The Ground Sampling Distance                                                                                                                                                 |
+| [license](https://github.com/radiantearth/stac-spec/blob/master/commons/common-metadata.md#licensing) | string | If provided for STAC Items, must be a Creative Commons (CC) license.                                                                                                                       |
 
 ### Additional Field Information
 
