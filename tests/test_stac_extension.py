@@ -7,9 +7,16 @@ import pytest
 from pystac.errors import STACValidationError
 from pystac.validation import JsonSchemaSTACValidator
 
+from stactools.hotosm.constants import (
+    OAM_EXTENSION_DEFAULT_VERSION,
+    OAM_EXTENSION_SCHEMA_URI_PATTERN,
+)
 from stactools.hotosm.oam_metadata import OamMetadata
-from stactools.hotosm.stac import OAM_EXT_SCHEMA, create_item
+from stactools.hotosm.stac import create_item
 
+OAM_EXT_SCHEMA = OAM_EXTENSION_SCHEMA_URI_PATTERN.format(
+    version=OAM_EXTENSION_DEFAULT_VERSION
+)
 OAM_STAC_EXTENSION_PATH = (
     Path(__file__).parents[1].joinpath("stac-extension", "json-schema", "schema.json")
 )
@@ -34,7 +41,6 @@ def test_oam_item_validates_stac_extension(
 ):
     """Ensure our OAM STAC Item validates against our own extension."""
     item = create_item(example_oam_image.sanitize())
-    item.stac_extensions.append(OAM_EXT_SCHEMA)
     item.validate(oam_validator)
 
 
@@ -43,7 +49,6 @@ def test_stac_extension_requires(
 ):
     """Ensure our OAM STAC Extension requires certain properties."""
     item = create_item(example_oam_image.sanitize())
-    item.stac_extensions.append(OAM_EXT_SCHEMA)
 
     broken = item.clone()
     broken.properties.pop("oam:platform_type")

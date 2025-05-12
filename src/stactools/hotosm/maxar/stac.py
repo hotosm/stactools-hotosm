@@ -18,6 +18,10 @@ from pystac import (
 from pystac.extensions.item_assets import ItemAssetDefinition
 from pystac.extensions.render import Render, RenderExtension
 
+from stactools.hotosm.constants import (
+    OAM_EXTENSION_DEFAULT_VERSION,
+    OAM_EXTENSION_SCHEMA_URI_PATTERN,
+)
 from stactools.hotosm.stac_common import add_alternate_assets
 
 COLLECTION_ID = "maxar-opendata"
@@ -144,7 +148,10 @@ def create_item(item: Item) -> Item:
             )
         )
 
-    # Add alternate assets info
     add_alternate_assets(oam_item)
+
+    oam_item.stac_extensions.append(
+        OAM_EXTENSION_SCHEMA_URI_PATTERN.format(version=OAM_EXTENSION_DEFAULT_VERSION)
+    )
 
     return oam_item
