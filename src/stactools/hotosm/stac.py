@@ -70,12 +70,9 @@ def create_collection() -> Collection:
     )
 
     collection.item_assets = {
-        "image": ItemAssetDefinition.create(
+        "visual": ItemAssetDefinition.create(
             title="Visual image",
-            description=(
-                "Visual imagery data acquired from satellite or unmanned aerial "
-                "vehicle (UAV)"
-            ),
+            description=("Imagery data formatted for visualization (usually RGB)"),
             media_type=MediaType.COG,
             roles=["data"],
         ),
@@ -93,7 +90,7 @@ def create_collection() -> Collection:
         {
             "visual": Render.create(
                 assets=[
-                    "image",
+                    "visual",
                 ],
                 title="Visual image",
             )
@@ -161,7 +158,7 @@ def create_item(oam_metadata: OamMetadata) -> Item:
         item.properties["created"] = datetime_to_str(oam_metadata.uploaded_at)
 
     item.add_asset(
-        "image",
+        "visual",
         Asset(
             href=oam_metadata.image_url,
             title=oam_metadata.title,
@@ -171,7 +168,7 @@ def create_item(oam_metadata: OamMetadata) -> Item:
     )
 
     item.ext.add("file")
-    file_ext = FileExtension.ext(item.assets["image"])
+    file_ext = FileExtension.ext(item.assets["visual"])
     file_ext.apply(size=oam_metadata.image_file_size)
 
     item.add_asset(
@@ -194,7 +191,7 @@ def create_item(oam_metadata: OamMetadata) -> Item:
         ),
     )
 
-    _add_projection_extension(item, ["image"])
+    _add_projection_extension(item, ["visual"])
     add_alternate_assets(item)
 
     item.stac_extensions.append(

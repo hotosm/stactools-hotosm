@@ -74,9 +74,7 @@ def create_collection(
     collection.item_assets = {
         "visual": ItemAssetDefinition.create(
             title="Visual image",
-            description=(
-                "Imagery appropriate for visualization from this acquisition."
-            ),
+            description="Imagery data formatted for visualization (RGB)",
             media_type=MediaType.COG,
             roles=["data"],
         )
@@ -91,7 +89,7 @@ def create_collection(
                 assets=[
                     "visual",
                 ],
-                title="Visual image",
+                title="Imagery data formatted for visualization (RGB)",
             )
         }
     )
@@ -138,7 +136,6 @@ def create_item(item: Item) -> Item:
 
     # Clear existing links and add DERIVED_FROM
     oam_item.clear_links()
-
     if item_href := item.get_self_href():
         oam_item.add_link(
             Link(
