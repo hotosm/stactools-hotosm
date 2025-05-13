@@ -65,6 +65,19 @@ def example_oam_meta_api_response() -> dict:
 
 
 @pytest.fixture
+def example_oam_meta_api_response_sortby_uploaded_at(
+    example_oam_meta_api_response: dict,
+) -> dict:
+    """Example OAM Metadata API response, sorted by uploaded date."""
+    example_oam_meta_api_response["results"] = sorted(
+        example_oam_meta_api_response["results"],
+        key=lambda result: result.get("uploaded_at", "0"),
+        reverse=True,
+    )
+    return example_oam_meta_api_response
+
+
+@pytest.fixture
 def example_oam_image(example_oam_metadata: OamMetadata, tmp_path: Path) -> OamMetadata:
     """Provision data for the example OAM metadata item."""
     data = np.random.randint(low=0, high=255, size=(3, 13, 42), dtype="uint8")
