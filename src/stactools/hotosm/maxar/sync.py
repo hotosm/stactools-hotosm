@@ -28,7 +28,7 @@ def new_stac_items(
     Args:
         stac_io: PySTAC StacIO instance
         session: requests Session object
-        after: Optionally, provide a filter to find Items added after this date.
+        after: Only return Items added after this date.
 
     Yields:
         STAC Items

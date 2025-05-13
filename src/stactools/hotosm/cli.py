@@ -47,7 +47,7 @@ def create_pgstac_from_ctx(
     _: click.Parameter,
     value: Any,
 ) -> PgstacDB:
-    """Create DSN for PgSTAC."""
+    """Create PgSTAC connection."""
     dsn = "postgresql://{user}:{password}@{host}:{port}/{database}".format(
         user=ctx.params["pguser"],
         password=ctx.params["pgpassword"],
