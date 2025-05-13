@@ -13,3 +13,4 @@
 
 - Include Collection ID in Items to support ingest via `pypgstac load` ([#3](https://github.com/hotosm/stactools-hotosm/pull/3))
 - Ensure acquisition start comes before end. Populate Item datetime or start/end_datetime properly ([#4](https://github.com/hotosm/stactools-hotosm/pull/4))
+- Use the same asset key ("visual") for visual assets in OAM and Maxar STAC Catalogs ([#10](https://github.com/hotosm/stactools-hotosm/pull/10))

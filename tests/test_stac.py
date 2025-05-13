@@ -25,13 +25,13 @@ def test_create_item(example_oam_image: OamMetadata):
     for datetime_prop in {"start_datetime", "end_datetime"}:
         assert isinstance(str_to_datetime(item.properties[datetime_prop]), dt.datetime)
 
-    assert set(item.assets) == {"image", "thumbnail", "metadata"}
+    assert set(item.assets) == {"visual", "thumbnail", "metadata"}
 
-    assert "file:size" in item.assets["image"].extra_fields
+    assert "file:size" in item.assets["visual"].extra_fields
     for prop in {"code", "geometry", "bbox", "shape", "transform"}:
-        assert f"proj:{prop}" in item.assets["image"].extra_fields
+        assert f"proj:{prop}" in item.assets["visual"].extra_fields
 
-    assert "alternate" not in item.assets["image"].extra_fields
+    assert "alternate" not in item.assets["visual"].extra_fields
 
 
 def test_create_item_raises_asset_not_found(example_oam_metadata: OamMetadata):
@@ -53,12 +53,12 @@ def test_create_item_creates_s3_alternate_assets(
 
     item = create_item(example_oam_metadata)
 
-    image_asset = item.assets["image"]
-    assert image_asset.extra_fields["alternate:name"] == "HTTPS"
+    visual_asset = item.assets["visual"]
+    assert visual_asset.extra_fields["alternate:name"] == "HTTPS"
 
-    image_alt_assets = image_asset.extra_fields["alternate"]
-    assert "s3" in image_alt_assets
-    assert image_alt_assets["s3"] == {
+    visual_alt_assets = visual_asset.extra_fields["alternate"]
+    assert "s3" in visual_alt_assets
+    assert visual_alt_assets["s3"] == {
         "alternate:name": "S3",
         "href": "s3://test-bucket/test.tif",
     }

@@ -18,6 +18,10 @@ from pystac import (
 from pystac.extensions.item_assets import ItemAssetDefinition
 from pystac.extensions.render import Render, RenderExtension
 
+from stactools.hotosm.constants import (
+    OAM_EXTENSION_DEFAULT_VERSION,
+    OAM_EXTENSION_SCHEMA_URI_PATTERN,
+)
 from stactools.hotosm.stac_common import add_alternate_assets
 
 COLLECTION_ID = "maxar-opendata"
@@ -70,9 +74,7 @@ def create_collection(
     collection.item_assets = {
         "visual": ItemAssetDefinition.create(
             title="Visual image",
-            description=(
-                "Imagery appropriate for visualization from this acquisition."
-            ),
+            description="Imagery data formatted for visualization (RGB)",
             media_type=MediaType.COG,
             roles=["data"],
         )
@@ -87,7 +89,7 @@ def create_collection(
                 assets=[
                     "visual",
                 ],
-                title="Visual image",
+                title="Imagery data formatted for visualization (RGB)",
             )
         }
     )
@@ -134,7 +136,6 @@ def create_item(item: Item) -> Item:
 
     # Clear existing links and add DERIVED_FROM
     oam_item.clear_links()
-
     if item_href := item.get_self_href():
         oam_item.add_link(
             Link(
@@ -144,7 +145,10 @@ def create_item(item: Item) -> Item:
             )
         )
 
-    # Add alternate assets info
     add_alternate_assets(oam_item)
+
+    oam_item.stac_extensions.append(
+        OAM_EXTENSION_SCHEMA_URI_PATTERN.format(version=OAM_EXTENSION_DEFAULT_VERSION)
+    )
 
     return oam_item
