@@ -2070,6 +2070,10 @@ dev = [
     { name = "types-requests" },
     { name = "types-shapely" },
 ]
+ingest = [
+    { name = "click" },
+    { name = "pypgstac" },
+]
 
 [package.metadata]
 requires-dist = [
@@ -2094,6 +2098,10 @@ dev = [
     { name = "shapely", specifier = ">=2.1.0" },
     { name = "types-requests", specifier = ">=2.32.0.20250328" },
     { name = "types-shapely", specifier = ">=2.0.0.20250326" },
+]
+ingest = [
+    { name = "click", specifier = ">=8.1.8" },
+    { name = "pypgstac", specifier = ">=0.9.6" },
 ]
 
 [[package]]

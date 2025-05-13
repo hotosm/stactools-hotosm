@@ -29,6 +29,10 @@ demo = [
     "rustac>=0.7.2",
     "pypgstac[psycopg]>=0.9.6",
 ]
+ingest = [
+    "click>=8.1.8",
+    "pypgstac>=0.9.6",
+]
 
 [tool.pytest.ini_options]
 testpaths = [
