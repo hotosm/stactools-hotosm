@@ -93,6 +93,7 @@ class OamMetadataClient:
 
     def get_items(
         self,
+        uploaded_after: dt.datetime | None = None,
         limit: int = 100,
         page_number: int = 1,
         raise_on_error: bool = False,
@@ -100,6 +101,8 @@ class OamMetadataClient:
         """List OAM metadata items.
 
         Args:
+            uploaded_after: If provided, filter to only return items uploaded after this
+                datetime. The datetime should be timezone aware.
             limit: Number of items to retrieve.
             page_number: Offset `limit` pages into the catalog, beginning with page 1.
             raise_on_error: Raise an exception if an item cannot be parsed instead of
@@ -111,8 +114,10 @@ class OamMetadataClient:
         resp = self.session.get(
             self.api_root,
             params={
-                "limit": limit,
-                "page": page_number,
+                "order_by": "uploaded_at",
+                "sort": "desc",
+                "limit": str(limit),
+                "page": str(page_number),
             },
         )
         resp.raise_for_status()
@@ -122,19 +127,43 @@ class OamMetadataClient:
             # Some OAM metadata entries have null start/end times, so log these
             # as errors and keep moving
             try:
-                results.append(self._parse_result(result))
+                parsed = self._parse_result(result)
             except Exception as e:
                 logger.exception(f"Could not parse id={result['_id']}")
                 if raise_on_error:
                     raise e
+            else:
+                if uploaded_after is not None:
+                    if (
+                        parsed.uploaded_at is not None
+                        and parsed.uploaded_at >= uploaded_after
+                    ):
+                        results.append(parsed)
+                else:
+                    results.append(parsed)
 
         return results
 
-    def get_all_items(self, page_size: int = 500) -> Iterator[OamMetadata]:
-        """Iterate through all images in the catalog."""
+    def get_all_items(
+        self, uploaded_after: dt.datetime | None = None, limit: int = 500
+    ) -> Iterator[OamMetadata]:
+        """Iterate through all images in the catalog.
+
+        Args:
+            uploaded_after: If provided, filter to only return items uploaded after this
+                date
+            limit: Number of items to retrieve.
+            raise_on_error: Raise an exception if an item cannot be parsed instead of
+                simply logging the exception. Defaults to False.
+
+        Returns:
+            At most `limit` metadata items.
+        """
         page = 1
         while True:
-            items = self.get_items(limit=page_size, page_number=page)
+            items = self.get_items(
+                uploaded_after=uploaded_after, limit=limit, page_number=page
+            )
             if not items:
                 break
             page += 1

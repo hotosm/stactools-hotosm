@@ -25,6 +25,30 @@ class TestOamMetadataClient:
         assert client.session is session
         assert client.api_root == "test"
 
+    def make_response_pages(
+        self, api_root: str, api_responses: dict, n_per_page: int
+    ) -> list[responses.Response]:
+        """Create mocked responses from /meta API."""
+        pages = ceil(10 / n_per_page)
+
+        resps = []
+        for page in range(pages + 1):
+            start = n_per_page * page
+            end = n_per_page * (page + 1)
+            data = {
+                "meta": api_responses["meta"],
+                "results": api_responses["results"][start:end],
+            }
+            resps.append(
+                responses.get(
+                    url=api_root,
+                    json=data,
+                    match=[query_param_matcher({"page": page + 1}, strict_match=False)],
+                )
+            )
+
+        return resps
+
     @pytest.fixture
     def test_client(self) -> OamMetadataClient:
         """Test client."""
@@ -109,27 +133,56 @@ class TestOamMetadataClient:
         example_oam_meta_api_response: dict,
     ):
         """Test get_all_items() method works with different page count sizes."""
-        resps = []
-        pages = ceil(10 / n_per_page)
-        for page in range(pages + 1):
-            start = n_per_page * page
-            end = n_per_page * (page + 1)
-            data = {
-                "meta": example_oam_meta_api_response["meta"],
-                "results": example_oam_meta_api_response["results"][start:end],
-            }
-            resps.append(
-                responses.get(
-                    url=test_client.api_root,
-                    json=data,
-                    match=[query_param_matcher({"page": page + 1}, strict_match=False)],
-                )
-            )
+        resps = self.make_response_pages(
+            api_root=test_client.api_root,
+            api_responses=example_oam_meta_api_response,
+            n_per_page=n_per_page,
+        )
 
-        items = list(test_client.get_all_items(page_size=n_per_page))
+        items = list(test_client.get_all_items(limit=n_per_page))
         assert len(items) == 10
         for resp in resps:
             assert resp.call_count == 1
+
+    @responses.activate
+    def test_get_items_uploaded_after(
+        self,
+        test_client: OamMetadataClient,
+        example_oam_meta_api_response_sortby_uploaded_at: dict,
+    ):
+        """Test getting items uploaded after some datetime."""
+        self.make_response_pages(
+            api_root=test_client.api_root,
+            api_responses=example_oam_meta_api_response_sortby_uploaded_at,
+            n_per_page=5,
+        )
+
+        uploaded_after = dt.datetime(2017, 1, 1, tzinfo=dt.UTC)
+        items = test_client.get_items(uploaded_after=uploaded_after)
+        assert all(
+            item.uploaded_at is None or item.uploaded_at >= uploaded_after
+            for item in items
+        )
+
+    @responses.activate
+    def test_get_all_items_uploaded_after(
+        self,
+        test_client: OamMetadataClient,
+        example_oam_meta_api_response_sortby_uploaded_at: dict,
+    ):
+        """Test getting all items uploaded after some datetime."""
+        self.make_response_pages(
+            api_root=test_client.api_root,
+            api_responses=example_oam_meta_api_response_sortby_uploaded_at,
+            n_per_page=5,
+        )
+
+        uploaded_after = dt.datetime(2017, 1, 1, tzinfo=dt.UTC)
+        all_items = list(test_client.get_all_items(uploaded_after=uploaded_after))
+        assert all(
+            item.uploaded_at is None or item.uploaded_at >= uploaded_after
+            for item in all_items
+        )
 
     def test_parse_result_handles_uploaded_at(
         self,

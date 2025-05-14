@@ -12,6 +12,9 @@ dependencies = [
     "rio-stac>=0.10.1",
 ]
 
+[project.scripts]
+hotosm = "stactools.hotosm.cli:main"
+
 [dependency-groups]
 dev = [
     "mypy>=1.15.0",
@@ -28,6 +31,10 @@ demo = [
     "notebook>=7.3.3",
     "rustac>=0.7.2",
     "pypgstac[psycopg]>=0.9.6",
+]
+ingest = [
+    "click>=8.1.8",
+    "pypgstac>=0.9.6",
 ]
 
 [tool.pytest.ini_options]
@@ -71,8 +78,9 @@ mypy_path = "$MYPY_CONFIG_FILE_DIR/src"
 namespace_packages = true
 
 [[tool.mypy.overrides]]
-module = ["rasterio.*", "rio_stac.stac"]
+module = ["pypgstac.db", "pypgstac.load", "rasterio.*", "rio_stac.stac"]
 follow_untyped_imports = true
+ignore_missing_imports = true
 
 [tool.commitizen]
 name = "cz_conventional_commits"
