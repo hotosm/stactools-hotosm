@@ -88,12 +88,8 @@ class OamMetadata:
             self.license = self.license.replace(" ", "-")
 
     def _sanitize_platform(self):
-        """Sanitize platform (usually rewriting acronyms as uppercase)."""
-        platform_transforms = {
-            "UAV": "uav",
-        }
-        if transformed := platform_transforms.get(self.platform.upper()):
-            self.platform = transformed
+        """Sanitize platform to a slug representation."""
+        self.platform = self.platform.lower().replace("_", "-")
 
     def _sanitize_sensor(self):
         """Sanitize bad sensor values."""
