@@ -34,7 +34,7 @@ demo = [
 ]
 ingest = [
     "click>=8.1.8",
-    "pypgstac>=0.9.6",
+    "pypgstac[psycopg]>=0.9.6",
 ]
 
 [tool.pytest.ini_options]
