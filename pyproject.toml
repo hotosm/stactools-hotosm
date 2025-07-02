@@ -12,6 +12,12 @@ dependencies = [
     "rio-stac>=0.10.1",
 ]
 
+[project.optional-dependencies]
+ingest = [
+    "click>=8.1.8",
+    "pypgstac[psycopg]>=0.9.6",
+]
+
 [project.scripts]
 hotosm = "stactools.hotosm.cli:main"
 
@@ -30,10 +36,6 @@ dev = [
 demo = [
     "notebook>=7.3.3",
     "rustac>=0.7.2",
-    "pypgstac[psycopg]>=0.9.6",
-]
-ingest = [
-    "click>=8.1.8",
     "pypgstac[psycopg]>=0.9.6",
 ]
 
