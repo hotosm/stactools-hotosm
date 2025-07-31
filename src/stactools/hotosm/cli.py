@@ -1,8 +1,11 @@
 """Command line interface for OAM STAC creation and syncing."""
 
 import datetime as dt
+import json
 from functools import partial
+from tempfile import TemporaryDirectory
 from typing import Any, Callable, Iterator, Literal, TypeVar
+from urllib.parse import urljoin
 
 import click
 import pystac
@@ -105,6 +108,54 @@ pgstac_database = click.option(
 @click.group
 def main():
     """STAC for Humanitarian OpenStreetMap Team OpenAerialMap."""
+
+
+@main.command()
+@click.option(
+    "--catalog",
+    type=click.Choice(["OAM", "Maxar"]),
+    required=True,
+    help="Sync STAC Collection definition for this dataset catalog.",
+)
+@pgstac_username
+@pgstac_password
+@pgstac_host
+@pgstac_port
+@pgstac_database
+@click.pass_context
+def sync_collection(
+    ctx: click.Context,
+    catalog: str,
+    **_pgstac_options: Any,
+) -> None:
+    """Sync Collection definition to PgSTAC."""
+    loader = Loader(ctx.obj["pgstac"])
+
+    if catalog == "OAM":
+        from stactools.hotosm.stac import create_collection
+
+        collection = create_collection()
+    elif catalog == "Maxar":
+        from stactools.hotosm.maxar.stac import (
+            create_collection as create_maxar_collection,
+        )
+        from stactools.hotosm.maxar.sync import MAXAR_ROOT
+
+        maxar_catalog = pystac.read_file(urljoin(MAXAR_ROOT, "catalog.json"))
+        assert isinstance(maxar_catalog, pystac.Catalog)
+        collection = create_maxar_collection(maxar_catalog)
+
+    else:
+        raise click.BadParameter("Unknown collection ID {collection}")
+
+    with TemporaryDirectory() as tmp_dir:
+        collections_ndjson = f"{tmp_dir}/collections.ndjson"
+        with open(collections_ndjson, "w") as f:
+            f.write(json.dumps(collection.to_dict()))
+
+        loader.load_collections(collections_ndjson, Methods.upsert)
+
+    click.echo(f"Synchronized the STAC Collection definition for {catalog}.")
 
 
 @main.command()
