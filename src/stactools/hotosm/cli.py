@@ -1,7 +1,8 @@
 """Command line interface for OAM STAC creation and syncing."""
 
 import datetime as dt
-from typing import Any
+from functools import partial
+from typing import Any, Callable, Iterator, Literal, TypeVar
 
 import click
 import pystac
@@ -19,6 +20,14 @@ uploaded_after_dt = click.option(
     type=click.DateTime(),
     help="Find Items uploaded after this date (UTC).",
 )
+handle_exceptions = click.option(
+    "--handle-exceptions",
+    type=click.Choice(["RAISE", "IGNORE"]),
+    help="Behavior for exception handling when creating STAC Items.",
+    default="RAISE",
+    show_default=True,
+)
+HandleExceptionsType = Literal["RAISE", "IGNORE"]
 
 
 def parse_uploaded_since(
@@ -101,6 +110,7 @@ def main():
 @main.command()
 @uploaded_since_sec
 @uploaded_after_dt
+@handle_exceptions
 @pgstac_username
 @pgstac_password
 @pgstac_host
@@ -111,32 +121,32 @@ def sync_oam(
     ctx: click.Context,
     uploaded_since: float | None,
     uploaded_after: dt.datetime | None,
+    handle_exceptions: HandleExceptionsType,
     **_pgstac_options: Any,
 ):
     """Sync new STAC Items from OAM metadata API."""
     from stactools.hotosm.constants import COLLECTION_ID
+    from stactools.hotosm.oam_metadata import OamMetadata
     from stactools.hotosm.oam_metadata_client import OamMetadataClient
     from stactools.hotosm.stac import create_item
 
     uploaded_after = parse_uploaded_since(uploaded_since, uploaded_after)
     loader = Loader(ctx.obj["pgstac"])
-    click.echo(f"Looking for OAM metadata entities added since {uploaded_after}")
-
     client = OamMetadataClient.new()
-    oam_meta = list(client.get_all_items(uploaded_after=uploaded_after))
-    click.echo(f"Found {len(oam_meta)} added since {uploaded_after}")
 
-    items_dict = []
-    for oam_meta_ in oam_meta:
-        item = create_item(oam_meta_.sanitize()).to_dict()
-        item["collection"] = COLLECTION_ID
-        items_dict.append(item)
+    def get_all_items_sanitized(uploaded_after: dt.datetime) -> Iterator[OamMetadata]:
+        for oam_metadata in client.get_all_items(uploaded_after):
+            yield oam_metadata.sanitize()
 
-    loader.load_items(
-        iter(items_dict),
-        insert_mode=Methods.upsert,
+    click.echo(f"Looking for OAM metadata entities added since {uploaded_after}")
+    sync_handler(
+        collection_id=COLLECTION_ID,
+        raw_metadata_creator=get_all_items_sanitized,
+        stac_item_creator=create_item,
+        uploaded_after=uploaded_after,
+        loader=loader,
+        handle_exceptions=handle_exceptions,
     )
-    click.echo(f"Completed ingesting {len(items_dict)} STAC Items")
 
 
 @main.command()
@@ -152,6 +162,7 @@ def sync_maxar(
     ctx: click.Context,
     uploaded_since: float | None,
     uploaded_after: dt.datetime | None,
+    handle_exceptions: HandleExceptionsType,
     **_pgstac_options: Any,
 ) -> None:
     """Sync new Maxar Items from the open data bucket."""
@@ -160,17 +171,46 @@ def sync_maxar(
 
     uploaded_after = parse_uploaded_since(uploaded_since, uploaded_after)
     loader = Loader(ctx.obj["pgstac"])
-    click.echo(f"Looking for STAC Items added since {uploaded_after}")
 
-    raw_items = list(
-        new_stac_items(pystac.stac_io.RetryStacIO(), requests.Session(), uploaded_after)
+    click.echo(f"Looking for STAC Items added since {uploaded_after}")
+    sync_handler(
+        collection_id=COLLECTION_ID,
+        raw_metadata_creator=partial(
+            new_stac_items, pystac.stac_io.RetryStacIO(), requests.Session()
+        ),
+        stac_item_creator=create_item,
+        uploaded_after=uploaded_after,
+        loader=loader,
+        handle_exceptions=handle_exceptions,
     )
-    click.echo(f"Found {len(raw_items)} added since {uploaded_after}")
+
+
+MetadataType = TypeVar("MetadataType")
+
+
+def sync_handler(
+    collection_id: str,
+    raw_metadata_creator: Callable[[dt.datetime], Iterator[MetadataType]],
+    stac_item_creator: Callable[[MetadataType], pystac.Item],
+    uploaded_after: dt.datetime,
+    loader: Loader,
+    handle_exceptions: HandleExceptionsType,
+) -> None:
+    """Orchestrate creating STAC Items from a data provider."""
+    raw_metadata = list(raw_metadata_creator(uploaded_after))
+    click.echo(f"Found {len(raw_metadata)} metadata items added since {uploaded_after}")
 
     items_dict = []
-    for raw_item in raw_items:
-        item = create_item(raw_item).to_dict()
-        item["collection"] = COLLECTION_ID
+    errors = []
+    for raw_metadata_ in raw_metadata:
+        try:
+            item = stac_item_creator(raw_metadata_).to_dict()
+        except Exception as e:
+            if handle_exceptions == "RAISE":
+                raise
+            elif handle_exceptions == "IGNORE":
+                errors.append(f"{raw_metadata_}: {e}")
+        item["collection"] = collection_id
         items_dict.append(item)
 
     loader.load_items(
@@ -178,3 +218,8 @@ def sync_maxar(
         insert_mode=Methods.upsert,
     )
     click.echo(f"Completed ingesting {len(items_dict)} STAC Items")
+
+    if errors:
+        click.echo(f"Encountered errors with {len(errors)} OAM catalog entries:")
+        for error in errors:
+            click.echo(error)
