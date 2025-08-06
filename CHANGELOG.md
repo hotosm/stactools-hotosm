@@ -18,7 +18,7 @@
 
 -
 
-## [0.2.0]
+## [v0.2.0]
 
 ### Added
 
@@ -26,7 +26,7 @@
 - Synchronize Collections in CLI ([#16](https://github.com/hotosm/stactools-hotosm/pull/16))
 - Dump STAC Items to NDJSON in CLI ([#16](https://github.com/hotosm/stactools-hotosm/pull/16))
 
-## [0.1.0]
+## [v0.1.0]
 
 ### Added
 
@@ -43,3 +43,6 @@
 - Use the same asset key ("visual") for visual assets in OAM and Maxar STAC Catalogs ([#10](https://github.com/hotosm/stactools-hotosm/pull/10))
 - Ensure `oam:platform_type` is lower cased ([#12](https://github.com/hotosm/stactools-hotosm/pull/12))
 - Ingest dependencies should be defined as an optional dependency, not extra ([#15](https://github.com/hotosm/stactools-hotosm/pull/15))
+
+[v0.2.0]: https://github.com/hotosm/stactools-hotosm/releases/tag/v0.2.0
+[v0.1.0]: https://github.com/hotosm/stactools-hotosm/releases/tag/v0.1.0
