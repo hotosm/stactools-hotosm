@@ -24,6 +24,7 @@
 
 - Allow ignoring exceptions in Item sync CLI ([#16](https://github.com/hotosm/stactools-hotosm/pull/16))
 - Synchronize Collections in CLI ([#16](https://github.com/hotosm/stactools-hotosm/pull/16))
+- Dump STAC Items to NDJSON in CLI ([#16](https://github.com/hotosm/stactools-hotosm/pull/16))
 
 ## [0.1.0]
 
