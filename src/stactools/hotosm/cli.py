@@ -210,7 +210,6 @@ def dump_oam(
         handle_exceptions=handle_exceptions,
     )
     dump_to_ndjson(file, items)
-    click.echo(f"Completed dumping {len(items)} STAC Items to {file}")
     report_errors(errors)
 
 
