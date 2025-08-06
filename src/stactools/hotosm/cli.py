@@ -134,6 +134,14 @@ dump_to_path = click.option(
 )
 
 
+catalog_option = click.option(
+    "--catalog",
+    type=click.Choice(["OAM", "Maxar"]),
+    required=True,
+    help="Sync STAC Collection definition for this dataset catalog.",
+)
+
+
 # ===== CLI commands
 @click.group
 def main():
@@ -141,12 +149,24 @@ def main():
 
 
 @main.command()
-@click.option(
-    "--catalog",
-    type=click.Choice(["OAM", "Maxar"]),
-    required=True,
-    help="Sync STAC Collection definition for this dataset catalog.",
-)
+@dump_to_path
+@catalog_option
+def dump_collection(
+    file: Path,
+    catalog: str,
+    **_pgstac_options: Any,
+) -> None:
+    """Dump Collection definition to JSON.
+
+    The output of this CLI program can be used with the `pypgstac load collections` CLI
+    command to bulk load STAC Items into PgSTAC.
+    """
+    create_and_save_collection(catalog, file)
+    click.echo(f"Saved the STAC Collection definition for {catalog} to {file}.")
+
+
+@main.command()
+@catalog_option
 @pgstac_username
 @pgstac_password
 @pgstac_host
@@ -161,24 +181,12 @@ def sync_collection(
     """Sync Collection definition to PgSTAC."""
     loader = Loader(ctx.obj["pgstac"])
 
-    if catalog == "OAM":
-        collection = create_oam_collection()
-    elif catalog == "Maxar":
-        maxar_catalog = pystac.read_file(urljoin(MAXAR_ROOT, "catalog.json"))
-        assert isinstance(maxar_catalog, pystac.Catalog)
-        collection = create_maxar_collection(maxar_catalog)
-
-    else:
-        raise click.BadParameter("Unknown collection ID {collection}")
-
     with TemporaryDirectory() as tmp_dir:
-        collections_ndjson = f"{tmp_dir}/collections.ndjson"
-        with open(collections_ndjson, "w") as f:
-            f.write(json.dumps(collection.to_dict()))
+        destination = Path(tmp_dir).joinpath("collections.json")
+        create_and_save_collection(catalog, destination)
+        loader.load_collections(destination, Methods.upsert)
 
-        loader.load_collections(collections_ndjson, Methods.upsert)
-
-    click.echo(f"Synchronized the STAC Collection definition for {catalog}.")
+    click.echo(f"Synchronized the STAC Collection definition for {catalog} to PgSTAC.")
 
 
 @main.command()
@@ -312,7 +320,19 @@ def sync_maxar(
 
 
 # ===== Helper functions
-MetadataType = TypeVar("MetadataType")
+def create_and_save_collection(catalog: str, destination: Path) -> None:
+    """Create a STAC Collection and write to JSON."""
+    if catalog == "OAM":
+        collection = create_oam_collection()
+    elif catalog == "Maxar":
+        maxar_catalog = pystac.read_file(urljoin(MAXAR_ROOT, "catalog.json"))
+        assert isinstance(maxar_catalog, pystac.Catalog)
+        collection = create_maxar_collection(maxar_catalog)
+    else:
+        raise click.BadParameter("Unknown collection ID {collection}")
+
+    with destination.open("w") as dst:
+        dst.write(json.dumps(collection.to_dict()))
 
 
 def get_oam_items_after(
@@ -330,6 +350,9 @@ def get_maxar_items_after(
     yield from new_maxar_stac_items(
         pystac.stac_io.RetryStacIO(), requests.Session(), uploaded_after
     )
+
+
+MetadataType = TypeVar("MetadataType")
 
 
 def sync_handler(
