@@ -225,6 +225,7 @@ def dump_oam(
 @dump_to_path
 @uploaded_since_sec
 @uploaded_after_dt
+@handle_exceptions
 def dump_maxar(
     file: Path,
     uploaded_since: float | None,
@@ -289,6 +290,7 @@ def sync_oam(
 @main.command()
 @uploaded_since_sec
 @uploaded_after_dt
+@handle_exceptions
 @pgstac_username
 @pgstac_password
 @pgstac_host
