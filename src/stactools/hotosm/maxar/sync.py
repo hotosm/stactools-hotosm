@@ -11,7 +11,7 @@ import requests
 logger = logging.getLogger(__name__)
 
 MAXAR_ROOT = "https://maxar-opendata.s3.amazonaws.com/events/"
-MAXAR_EVENT_INFO = "https://maxar-opendata.s3.amazonaws.com/event_info.json"
+MAXAR_EVENT_INFO = "https://maxar-opendata.s3.amazonaws.com/events/event_info.json"
 
 
 def new_stac_items(
