@@ -46,6 +46,16 @@ We use `mypy` for static type checking,
 ./scripts/typecheck
 ```
 
+## Package Version Releases
+
+To cut a new release of the package version,
+
+1. Update the `CHANGELOG.md` by recording changes in a new version section
+   and updating links.
+2. Update the package version definition in `src/stactools/hotosm/__version__.py`.
+3. Open a PR with these changes and merge into `main`.
+4. Create a new tagged release on Github.
+
 ## STAC Extension
 
 This repository also defines a STAC extension describing specific OpenAerialMap
