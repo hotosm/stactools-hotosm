@@ -1,5 +1,15 @@
 # STAC Tools for Humanitarian OpenStreetMap Team's OpenAerialMap
 
+> [!WARNING]
+>
+> Archived.
+>
+> This repo was moved to be a package in a monorepo.
+>
+> https://github.com/hotosm/openaerialmap/tree/main/backend/stactools-hotosm
+>
+> See: https://github.com/hotosm/stactools-hotosm/issues/17
+
 ## Getting started
 
 This project uses `uv` to manage our Python dependencies. Visit their
